@@ -37,9 +37,14 @@ URL options: `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate
 ## Using your own artwork
 
 Put the image at `targets/artwork.jpg` (until then `targets/placeholder.jpg` is used — print it
-or show it on a second screen). The first start compiles the image in the browser and caches
-it. To skip that step on phones, open Settings → *Download compiled target* and save the file
-as `targets/artwork.mind` next to the image.
+or show it on a second screen). Then precompile it, otherwise every phone compiles it on first
+start (30 s or more):
+
+```bash
+node tools/dev-server.mjs 8526
+# open http://localhost:8526/tools/compile-target.html?img=artwork.jpg&save=1
+# -> writes targets/artwork.mind; commit it next to the image
+```
 
 Content lives in `content/artworks.json`: core segments (shown in every format) and optional
 detail segments (detailed formats only). The current text is a **draft and must be verified**.
@@ -54,5 +59,6 @@ src/app.js            tracking, content player, HUD, logging
 content/artworks.json artwork content (draft)
 targets/              target images (+ compiled .mind)
 test/                 Python reference export + parity test
+tools/                local dev server + target precompiler
 vendor/               MindAR 1.2.5 (MIT), three.js r160 (MIT)
 ```

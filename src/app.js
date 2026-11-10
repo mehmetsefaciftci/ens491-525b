@@ -347,7 +347,10 @@ function bindSettings() {
 }
 
 $("#fam").oninput = (e) => ($("#famOut").textContent = e.target.value);
-$("#startBtn").onclick = () => start().catch((e) => { busy(null); $("#startMsg").textContent = `Could not start: ${e.message || e}`; console.error(e); });
+$("#startBtn").onclick = (ev) => {
+  ev.target.disabled = true;
+  start().catch((e) => { busy(null); ev.target.disabled = false; $("#startMsg").textContent = `Could not start: ${e.message || e}`; console.error(e); });
+};
 document.querySelectorAll("[data-act]").forEach((b) => (b.onclick = () => onControl(b.dataset.act)));
 document.querySelectorAll("[data-ov]").forEach((b) => (b.onclick = () => onOverride(b.dataset.ov)));
 $("#bExport").onclick = exportLog;
@@ -362,7 +365,7 @@ $("#bNewArt").onclick = () => {
 };
 if (DEBUG || params.has("nocam")) {   // desktop testing without the printed artwork; every decision is flagged tracking_simulated
   const b = document.createElement("button"); b.className = "pill btn"; b.textContent = "Simulate target";
-  b.onclick = () => { if (tracking) { anchorRef.onTargetLost(); return; }
+  b.onclick = () => { if (!anchorRef) return; if (tracking) { anchorRef.onTargetLost(); return; }
     tracking = true; simulatedTracking = true; if (pendingRecognition) recognize(); updateHud(); };
   $("#hud .hrow:last-child").appendChild(b);
   if (!pinned) pinned = true;

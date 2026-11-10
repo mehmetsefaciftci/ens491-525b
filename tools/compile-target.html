@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Compile AR target</title>
+  <script type="importmap">
+  { "imports": { "mindar-image": "../vendor/mind-ar/mindar-image.prod.js" } }
+  </script>
+</head>
+<body>
+  <!-- Compiles ../targets/<img> into a MindAR .mind file so phones skip the slow in-browser step.
+       With `node tools/dev-server.mjs`: open /tools/compile-target.html?img=artwork.jpg&save=1
+       and the file is written to targets/artwork.mind. Otherwise use the download link. -->
+  <p id="status">compiling…</p>
+  <a id="dl" hidden>download .mind</a>
+  <script type="module">
+    import { Compiler } from "mindar-image";
+    const name = new URLSearchParams(location.search).get("img") || "placeholder.jpg";
+    const img = new Image();
+    img.src = `../targets/${name}`;
+    await img.decode();
+    const compiler = new Compiler();
+    await compiler.compileImageTargets([img], (p) => (document.querySelector("#status").textContent = `compiling ${name}: ${p.toFixed(0)}%`));
+    const data = await compiler.exportData();
+    const a = document.querySelector("#dl");
+    a.href = URL.createObjectURL(new Blob([data])); a.download = name.replace(/\.\w+$/, ".mind"); a.hidden = false;
+    let saved = "";
+    if (new URLSearchParams(location.search).has("save")) {   // only works with tools/dev-server.mjs
+      const r = await fetch(`../targets/${a.download}`, { method: "PUT", body: data });
+      saved = r.ok ? ` · saved to targets/${a.download}` : ` · save failed (${r.status})`;
+    }
+    document.querySelector("#status").textContent = `done: ${data.length} bytes${saved}`;
+  </script>
+</body>
+</html>
