@@ -1,0 +1,24 @@
+{
+  "_note": "DRAFT content for the feasibility demo. Every fact must be checked against a cited source by the content owner (T2) before any participant sees it. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2).",
+  "lang": "en-US",
+  "artworks": [
+    {
+      "id": "A1",
+      "target": "targets/artwork.jpg",
+      "fallback_target": "targets/placeholder.jpg",
+      "title": "The Tortoise Trainer",
+      "artist": "Osman Hamdi Bey",
+      "year": "1906",
+      "status": "draft - facts not yet verified",
+      "core": [
+        { "id": "c1", "text": "The Tortoise Trainer was painted in 1906 by Osman Hamdi Bey, a leading Ottoman painter and archaeologist." },
+        { "id": "c2", "text": "An elderly man in a long robe tries to train a group of tortoises, which slowly go their own way." }
+      ],
+      "detail": [
+        { "id": "d1", "optional": true, "text": "The scene is usually said to be set in an upper room of the Green Mosque in Bursa." },
+        { "id": "d2", "optional": true, "text": "Many viewers read the painting as gentle satire on the slow pace of reform; the face of the trainer is often compared with the painter's own." },
+        { "id": "d3", "optional": true, "text": "Today the painting is in the collection of the Pera Museum in Istanbul." }
+      ]
+    }
+  ]
+}

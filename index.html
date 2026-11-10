@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>CA Guide · WebAR feasibility spike</title>
+  <link rel="stylesheet" href="src/style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/three.module.js",
+      "three/addons/": "./vendor/three/addons/",
+      "mindar-image-three": "./vendor/mind-ar/mindar-image-three.prod.js",
+      "mindar-image": "./vendor/mind-ar/mindar-image.prod.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="ar"></div>
+
+  <!-- Start screen: a user gesture is needed for camera, microphone and speech. -->
+  <section id="start" class="sheet">
+    <h1>Context-aware AR guide</h1>
+    <p class="sub">ENS491 · 525B · feasibility spike on a commodity smartphone</p>
+    <label>Familiarity with this artwork (1–7)
+      <input id="fam" type="range" min="1" max="7" value="4" /><output id="famOut">4</output>
+    </label>
+    <fieldset>
+      <legend>Format constraints</legend>
+      <label><input type="radio" name="acc" value="" checked /> none</label>
+      <label><input type="radio" name="acc" value="no_audio" /> text only</label>
+      <label><input type="radio" name="acc" value="no_text" /> audio only</label>
+    </fieldset>
+    <button id="startBtn" class="primary">Start camera &amp; microphone</button>
+    <p id="startMsg" class="msg"></p>
+    <p class="fine">Nothing leaves this phone. Camera frames are used only for tracking; the microphone is used only for a sound level number. The decision log stays on the device until you export it.</p>
+  </section>
+
+  <!-- AR content panel; moved into the CSS3D anchor next to the artwork, or pinned to screen. -->
+  <div id="panel" class="panel hidden" aria-live="polite">
+    <div class="pmeta"><span id="pFormat"></span><span id="pSeg"></span></div>
+    <h2 id="pTitle"></h2>
+    <p id="pText"></p>
+    <div class="pctrl">
+      <button data-act="next" id="bNext">Next ▸</button>
+      <button data-act="replay">↺ Replay</button>
+      <button data-act="skip" id="bSkip">Skip detail</button>
+      <button data-act="more" id="bMore">More detail</button>
+    </div>
+    <div class="pfmt" role="group" aria-label="Choose format">
+      <button data-ov="brief_text">Brief text</button>
+      <button data-ov="detailed_text">Detailed text</button>
+      <button data-ov="brief_audio">Brief audio</button>
+      <button data-ov="detailed_audio">Detailed audio</button>
+    </div>
+  </div>
+
+  <!-- Decision HUD: utilities, reason, live measurements. -->
+  <aside id="hud" class="hud hidden">
+    <div class="hrow">
+      <span id="hTrack" class="pill">scanning…</span>
+      <span id="hNoise" class="pill">noise –</span>
+      <span id="hFps" class="pill">– fps</span>
+      <span id="hLat" class="pill">decision – ms</span>
+      <button id="hToggle" class="pill btn" aria-expanded="true">▾</button>
+    </div>
+    <div id="hBody">
+      <div id="hBars"></div>
+      <p id="hReason" class="reason">Point the camera at the artwork.</p>
+      <div class="hrow">
+        <button id="bNewArt" class="pill btn">Next artwork ▸</button>
+        <button id="bExport" class="pill btn">Export log</button>
+        <button id="bSettings" class="pill btn">Settings</button>
+      </div>
+    </div>
+  </aside>
+
+  <section id="settings" class="sheet hidden">
+    <h2>Settings (pilot tuning)</h2>
+    <label>Noise threshold <output id="thrOut"></output> dB
+      <input id="thr" type="range" min="40" max="85" step="1" /></label>
+    <label>Calibration offset <output id="calOut"></output>
+      <input id="cal" type="range" min="60" max="130" step="1" /></label>
+    <button id="bCal" class="small">This room is quiet → set to 40 dB</button>
+    <label>Behaviour step |B| per event <output id="bstepOut"></output>
+      <input id="bstep" type="range" min="0" max="0.4" step="0.05" /></label>
+    <label><input id="hist" type="checkbox" checked /> Use behaviour history (off = no-history ablation)</label>
+    <label><input id="forceNoisy" type="checkbox" /> Simulate noisy room (flagged in log)</label>
+    <label><input id="pin" type="checkbox" /> Pin panel to screen instead of next to the artwork</label>
+    <label>Panel side
+      <select id="side"><option value="right">right of artwork</option><option value="below">below artwork</option></select></label>
+    <div class="hrow">
+      <button id="bMind" class="small">Download compiled target (.mind)</button>
+      <button id="bClose" class="primary small">Close</button>
+    </div>
+    <p class="fine" id="buildInfo"></p>
+  </section>
+
+  <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyMsg"></p></div>
+
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

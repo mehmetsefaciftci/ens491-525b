@@ -1,0 +1,1864 @@
+[
+ {
+  "id": "S01",
+  "cat": "context",
+  "title": "Quiet room, no constraints",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_audio",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   }
+  ]
+ },
+ {
+  "id": "S02",
+  "cat": "context",
+  "title": "Noisy room, no constraints",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    72.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.3308,
+    "detailed_audio": 0.12
+   }
+  ]
+ },
+ {
+  "id": "S03",
+  "cat": "preference",
+  "title": "Text-only user, quiet (Appendix A example)",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_audio"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   }
+  ]
+ },
+ {
+  "id": "S04",
+  "cat": "detail skipping",
+  "title": "Two detail skips -> brief on next artwork (Appendix A)",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_audio"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_text",
+    "initial"
+   ],
+   [
+    3,
+    "brief_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   },
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.33
+   }
+  ]
+ },
+ {
+  "id": "S05",
+  "cat": "no-change",
+  "title": "Single detail skip is not enough",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_audio"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "ev",
+    "complete_detail"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    3,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   },
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   }
+  ]
+ },
+ {
+  "id": "S06",
+  "cat": "detail skipping",
+  "title": "Skips then 'request more' restores detail",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_audio"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "request_more"
+   ],
+   [
+    "rec",
+    "A3",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    3,
+    "brief_text",
+    "initial"
+   ],
+   [
+    5,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   },
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.33
+   },
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48
+   }
+  ]
+ },
+ {
+  "id": "S07",
+  "cat": "replay",
+  "title": "Familiar user replays brief text -> detailed next",
+  "user": {
+   "familiarity": 7,
+   "accessibility": [
+    "no_audio"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "replay"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "brief_text",
+    "initial"
+   ],
+   [
+    2,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.38
+   },
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.53
+   }
+  ]
+ },
+ {
+  "id": "S08",
+  "cat": "noise change",
+  "title": "Noise rises mid-artwork -> switch audio to text",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "seg",
+    72.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_audio",
+    "initial"
+   ],
+   [
+    1,
+    "detailed_text",
+    "switch"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "switch",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "switch",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {
+    "brief_text": 0.35,
+    "detailed_text": 0.43,
+    "brief_audio": 0.2808,
+    "detailed_audio": 0.12
+   }
+  ]
+ },
+ {
+  "id": "S09",
+  "cat": "noise change",
+  "title": "Noise rises then falls: only one auto change",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "seg",
+    72.0,
+    {}
+   ],
+   [
+    "seg",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    1,
+    "detailed_text",
+    "switch"
+   ],
+   [
+    2,
+    "detailed_text",
+    "keep"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "switch",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "switch",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {
+    "brief_text": 0.35,
+    "detailed_text": 0.43,
+    "brief_audio": 0.2808,
+    "detailed_audio": 0.12
+   },
+   {
+    "brief_text": 0.35,
+    "detailed_text": 0.48,
+    "brief_audio": 0.3731,
+    "detailed_audio": 0.55
+   }
+  ]
+ },
+ {
+  "id": "S10",
+  "cat": "missing channel",
+  "title": "Noise sensor missing at recognition",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    null,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_audio",
+    "initial"
+   ]
+  ],
+  "expect_flag": [
+   0,
+   "noise_unknown"
+  ],
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "noise_unknown",
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "noise_unknown",
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.3731,
+    "detailed_audio": 0.55
+   }
+  ]
+ },
+ {
+  "id": "S11",
+  "cat": "missing channel",
+  "title": "Noise sensor drops mid-artwork -> keep",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    72.0,
+    {}
+   ],
+   [
+    "seg",
+    null,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_text",
+    "initial"
+   ],
+   [
+    1,
+    "detailed_text",
+    "keep"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "keep",
+    [
+     "noise_unknown",
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "keep",
+    [
+     "noise_unknown",
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.3308,
+    "detailed_audio": 0.12
+   },
+   {
+    "brief_text": 0.35,
+    "detailed_text": 0.48,
+    "brief_audio": 0.3231,
+    "detailed_audio": 0.5
+   }
+  ]
+ },
+ {
+  "id": "S12",
+  "cat": "tracking dropout",
+  "title": "Tracking lost at boundary -> keep",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "seg",
+    72.0,
+    {
+     "tracking": false
+    }
+   ]
+  ],
+  "expect": [
+   [
+    1,
+    "detailed_audio",
+    "keep"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {
+    "brief_text": 0.35,
+    "detailed_text": 0.43,
+    "brief_audio": 0.2808,
+    "detailed_audio": 0.12
+   }
+  ]
+ },
+ {
+  "id": "S13",
+  "cat": "tracking dropout",
+  "title": "No recognition -> no content decision",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {
+     "tracking": false
+    }
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    null,
+    "none"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    null,
+    "none",
+    []
+   ]
+  ],
+  "py_no_history": [
+   [
+    null,
+    "none",
+    []
+   ]
+  ],
+  "py_utilities": [
+   null
+  ]
+ },
+ {
+  "id": "S14",
+  "cat": "override",
+  "title": "Manual override is never auto-reversed",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "override:brief_text"
+   ],
+   [
+    "seg",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    1,
+    "brief_text",
+    "override"
+   ],
+   [
+    2,
+    "brief_text",
+    "keep"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "brief_text",
+    "override",
+    []
+   ],
+   [
+    "brief_text",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "brief_text",
+    "override",
+    []
+   ],
+   [
+    "brief_text",
+    "keep",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {},
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.43,
+    "brief_audio": 0.3731,
+    "detailed_audio": 0.55
+   }
+  ]
+ },
+ {
+  "id": "S15",
+  "cat": "override",
+  "title": "Repeated audio->text overrides penalise audio",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "override:detailed_text"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "override:detailed_text"
+   ],
+   [
+    "rec",
+    "A3",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    2,
+    "detailed_audio",
+    "initial"
+   ],
+   [
+    4,
+    "detailed_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {},
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {},
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.2731,
+    "detailed_audio": 0.45
+   }
+  ]
+ },
+ {
+  "id": "S16",
+  "cat": "no-change",
+  "title": "One audio->text override is not 'repeated'",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "override:detailed_text"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    2,
+    "detailed_audio",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    "detailed_text",
+    "override",
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {},
+   {
+    "brief_text": 0.4,
+    "detailed_text": 0.48,
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   }
+  ]
+ },
+ {
+  "id": "S17",
+  "cat": "preference",
+  "title": "Audio-only user in noise -> brief audio, never text",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_text"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    72.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "brief_audio",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "brief_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "brief_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_audio": 0.3308,
+    "detailed_audio": 0.12
+   }
+  ]
+ },
+ {
+  "id": "S18",
+  "cat": "no-change",
+  "title": "Audio-only user, two skips: penalty too small to change",
+  "user": {
+   "familiarity": 4,
+   "accessibility": [
+    "no_text"
+   ]
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {}
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "ev",
+    "skip_detail"
+   ],
+   [
+    "rec",
+    "A2",
+    45.0,
+    {}
+   ]
+  ],
+  "expect": [
+   [
+    3,
+    "detailed_audio",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    null,
+    null,
+    []
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_unknown"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.6
+   },
+   {
+    "brief_audio": 0.4231,
+    "detailed_audio": 0.45
+   }
+  ]
+ },
+ {
+  "id": "S19",
+  "cat": "validated demand (optional)",
+  "title": "Reproduce Appendix Table A2 decision map",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "Q20",
+    45.0,
+    {
+     "p": 0.2
+    }
+   ],
+   [
+    "rec",
+    "Q50",
+    45.0,
+    {
+     "p": 0.5
+    }
+   ],
+   [
+    "rec",
+    "Q80",
+    45.0,
+    {
+     "p": 0.8
+    }
+   ],
+   [
+    "rec",
+    "N20",
+    72.0,
+    {
+     "p": 0.2
+    }
+   ],
+   [
+    "rec",
+    "N50",
+    72.0,
+    {
+     "p": 0.5
+    }
+   ],
+   [
+    "rec",
+    "N80",
+    72.0,
+    {
+     "p": 0.8
+    }
+   ]
+  ],
+  "expect": [
+   [
+    0,
+    "detailed_audio",
+    "initial"
+   ],
+   [
+    1,
+    "detailed_audio",
+    "initial"
+   ],
+   [
+    2,
+    "brief_audio",
+    "initial"
+   ],
+   [
+    3,
+    "detailed_text",
+    "initial"
+   ],
+   [
+    4,
+    "brief_text",
+    "initial"
+   ],
+   [
+    5,
+    "brief_text",
+    "initial"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_text",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.2114,
+    "detailed_text": 0.3864,
+    "brief_audio": 0.286,
+    "detailed_audio": 0.49
+   },
+   {
+    "brief_text": 0.149,
+    "detailed_text": 0.051,
+    "brief_audio": 0.235,
+    "detailed_audio": 0.25
+   },
+   {
+    "brief_text": 0.0866,
+    "detailed_text": -0.2844,
+    "brief_audio": 0.184,
+    "detailed_audio": 0.01
+   },
+   {
+    "brief_text": 0.2114,
+    "detailed_text": 0.3864,
+    "brief_audio": 0.0292,
+    "detailed_audio": -0.122
+   },
+   {
+    "brief_text": 0.149,
+    "detailed_text": 0.051,
+    "brief_audio": -0.083,
+    "detailed_audio": -0.65
+   },
+   {
+    "brief_text": 0.0866,
+    "detailed_text": -0.2844,
+    "brief_audio": -0.1952,
+    "detailed_audio": -1.178
+   }
+  ]
+ },
+ {
+  "id": "S20",
+  "cat": "validated demand (optional)",
+  "title": "Small demand rise kept (gain < switch cost), large rise switches",
+  "user": {
+   "familiarity": 4,
+   "accessibility": []
+  },
+  "steps": [
+   [
+    "rec",
+    "A1",
+    45.0,
+    {
+     "p": 0.2
+    }
+   ],
+   [
+    "seg",
+    45.0,
+    {
+     "p": 0.6
+    }
+   ],
+   [
+    "seg",
+    45.0,
+    {
+     "p": 0.8
+    }
+   ]
+  ],
+  "expect": [
+   [
+    1,
+    "detailed_audio",
+    "keep"
+   ],
+   [
+    2,
+    "brief_audio",
+    "switch"
+   ]
+  ],
+  "expect_flag": null,
+  "py_with_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "keep",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_audio",
+    "switch",
+    [
+     "p_high_valid"
+    ]
+   ]
+  ],
+  "py_no_history": [
+   [
+    "detailed_audio",
+    "initial",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "detailed_audio",
+    "keep",
+    [
+     "p_high_valid"
+    ]
+   ],
+   [
+    "brief_audio",
+    "switch",
+    [
+     "p_high_valid"
+    ]
+   ]
+  ],
+  "py_utilities": [
+   {
+    "brief_text": 0.2114,
+    "detailed_text": 0.3864,
+    "brief_audio": 0.286,
+    "detailed_audio": 0.49
+   },
+   {
+    "brief_text": 0.0782,
+    "detailed_text": -0.1108,
+    "brief_audio": 0.168,
+    "detailed_audio": 0.17
+   },
+   {
+    "brief_text": 0.0366,
+    "detailed_text": -0.3344,
+    "brief_audio": 0.134,
+    "detailed_audio": 0.01
+   }
+  ]
+ }
+]
