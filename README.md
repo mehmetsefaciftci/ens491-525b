@@ -36,7 +36,7 @@ python -m http.server 8525    # then open http://localhost:8525/?nocam=1 on a de
 On a phone the page must be served over **HTTPS** (camera and microphone). Any static host
 works, e.g. GitHub Pages.
 
-URL options: `?study=1` controlled-study mode (consent, blocks, questionnaires, recall, results file) · `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
+URL options: `?prior=stated` (study: adaptive arm uses the participant's pick instead of practice behaviour) · `?content=content/<file>.json` other content file · `?study=1` controlled-study mode (consent, blocks, questionnaires, recall, results file) · `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
 `?pin=1` content panel pinned to the screen instead of next to the artwork.
 
 ## Using your own artwork
@@ -46,10 +46,13 @@ or show it on a second screen). Then precompile it, otherwise every phone compil
 start (30 s or more):
 
 ```bash
-node tools/dev-server.mjs 8526
-# open http://localhost:8526/tools/compile-target.html?img=artwork.jpg&save=1
-# -> writes targets/artwork.mind; commit it next to the image
+node tools/dev-server.mjs 8526                                  # in one terminal
+node tools/compile-targets.mjs --from content/artworks.json     # all paintings -> one .mind (headless Chrome)
 ```
+
+For several paintings set `"targets_mind": "targets/targets.mind"` in `content/artworks.json`; the
+target order is the order of the `artworks` list. Each painting needs `core` and `detail` segments
+(detail with `tag` and `priority`) and `recall` items with `keywords`.
 
 Content lives in `content/artworks.json`: core segments (shown in every format) and optional
 detail segments (detailed formats only). The current text is a **draft and must be verified**.
@@ -67,6 +70,7 @@ src/policy-bayes.js   Bayesian expected-utility policy (proposed revision)
 src/noise.js          microphone level meter
 src/motion.js         walking detection from the accelerometer
 src/filter.js         context-aware information filtering of optional facts
+src/load.js           behavioural cognitive-load estimate
 src/policy-fixed.js   non-adaptive comparator for the study
 src/study.js          counterbalancing, SUS and recall scoring
 src/study-ui.js       study mode screens

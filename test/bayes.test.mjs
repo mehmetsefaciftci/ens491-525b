@@ -23,6 +23,10 @@ const NEW = [
   { id: "S26", title: "Interest fades: old skips decay, explicit request restores detail",
     user: { accessibility: NA }, steps: [["rec", "A1", Q, {}], ["ev", "skip_detail"], ["ev", "skip_detail"], ["rec", "A2", Q, {}],
       ["ev", "request_more"], ["rec", "A3", Q, {}]], expect: [[3, "brief_text", "initial"], [5, "detailed_text", "initial"]] },
+  { id: "S27", title: "High behavioural load on the previous artwork -> brief text next",
+    user: { accessibility: NA }, steps: [["rec", "A1", Q, {}], ["rec", "A2", Q, { load: 0.85 }]], expect: [[0, "detailed_text", "initial"], [1, "brief_text", "initial"]] },
+  { id: "S28", title: "Load at its no-evidence level changes nothing",
+    user: { accessibility: NA }, steps: [["rec", "A1", Q, { load: 0.168 }]], expect: [[0, "detailed_text", "initial"]] },
 ];
 
 export function run(sc, { useHistory = true } = {}) {
@@ -37,6 +41,7 @@ export function run(sc, { useHistory = true } = {}) {
       const f = {}; const flags = [];
       if ("p" in extra) { f.p_high = extra.p; flags.push("p_high_validated"); }
       if ("move" in extra) f.p_moving = extra.move;
+      if ("load" in extra) f.p_load = extra.load;
       const obs = { timestamp: t, artwork_id: art, tracking_valid: extra.tracking ?? true, noise_or_missing: noise,
         optional_sensor_features: f, quality_flags: flags };
       step[0] === "rec" ? s.recognize(obs) : s.boundary(obs);

@@ -1,6 +1,6 @@
 # Bayesian policy: scenario results
 
-Original 20 scenarios: 15/20 identical to the fixed-step policy. New scenarios: 6/6 pass.
+Original 20 scenarios: 15/20 identical to the fixed-step policy. New scenarios: 8/8 pass.
 
 | ID | Scenario | Same as fixed-step | Fixed-step | Bayesian |
 |---|---|---|---|---|
@@ -33,3 +33,5 @@ Original 20 scenarios: 15/20 identical to the fixed-step policy. New scenarios: 
 | S24 | Noise just above threshold: expected gain, but too uncertain to switch | pass | detailed_audio/initial (p=0.52) → detailed_audio/keep (p=0.60) |
 | S25 | Clearly noisy after an uncertain reading -> switch with high confidence | pass | detailed_audio/initial (p=0.52) → detailed_audio/keep (p=0.60) → detailed_text/switch (p=0.88) |
 | S26 | Interest fades: old skips decay, explicit request restores detail | pass | detailed_text/initial (p=0.61) → brief_text/initial (p=0.69) → detailed_text/initial (p=0.68) |
+| S27 | High behavioural load on the previous artwork -> brief text next | pass | detailed_text/initial (p=0.61) → brief_text/initial (p=0.69) |
+| S28 | Load at its no-evidence level changes nothing | pass | detailed_text/initial (p=0.61) |

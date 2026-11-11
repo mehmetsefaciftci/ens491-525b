@@ -50,3 +50,27 @@ export function scoreRecall(answer, keywordGroups) {
   const a = ` ${normalise(answer)} `;
   return keywordGroups.every((alts) => alts.some((k) => a.includes(` ${normalise(k)}`)));
 }
+
+// Implicit preference from the practice artwork (no question asked). Each trial is one format
+// the participant tried: ratio = time it was shown or heard / its expected duration,
+// completed = audio played to the end or text stayed at least 80% of its reading time.
+// Returns pseudo-counts added to the Beta prior of the adaptive arm; each side capped at
+// PRACTICE_CAP so behaviour during the visit can still overrule it. Weights are [N].
+export const PRACTICE_CAP = 2;
+export function practicePrior(trials) {
+  const p = { a_d: 0, b_d: 0, a_a: 0, b_a: 0, evidence: [] };
+  const add = (k, v, why) => { p[k] += v; p.evidence.push(`${k}+${v}: ${why}`); };
+  for (const t of trials) {
+    const det = t.format.startsWith("detailed"), aud = t.format.endsWith("audio");
+    const done = t.completed || t.ratio >= 0.8, early = !t.completed && t.ratio < 0.5;
+    if (det && done) add("a_d", 0.75, `finished ${t.format}`);
+    if (det && early) add("b_d", 0.75, `left ${t.format} early`);
+    if (!det && done && t.ratio >= 1.0 && !aud) add("b_d", 0.25, `read ${t.format} fully`);
+    if (aud && done) add("a_a", 0.5, `listened to ${t.format} to the end`);
+    if (aud && early) add("b_a", 0.75, `stopped ${t.format} early`);
+    if (!aud && done) add("b_a", 0.5, `read ${t.format}`);
+    if (!aud && early) add("a_a", 0.25, `left ${t.format} quickly`);
+  }
+  for (const k of ["a_d", "b_d", "a_a", "b_a"]) p[k] = Math.min(PRACTICE_CAP, p[k]);
+  return p;
+}

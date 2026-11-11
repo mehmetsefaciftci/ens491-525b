@@ -20,6 +20,12 @@ const median = (a) => { if (!a.length) return null; const s = [...a].sort((x, y)
 const baseId = (label) => label.replace(/#\d+.*$/, "").replace(/-p\d+$/, "");
 const rows = [];                       // long format
 const perP = [];
+const loadPairs = [];                  // (mean behavioural P(high load) in a block, TLX, Paas)
+const rank = (a) => { const s = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]); const r = Array(a.length);
+  for (let i = 0; i < s.length;) { let j = i; while (j + 1 < s.length && s[j + 1][0] === s[i][0]) j++; for (let k = i; k <= j; k++) r[s[k][1]] = (i + j) / 2 + 1; i = j + 1; } return r; };
+const spearman = (x, y) => { if (x.length < 3) return null; const rx = rank(x), ry = rank(y), mx = mean(rx), my = mean(ry);
+  const num = rx.reduce((s, v, i) => s + (v - mx) * (ry[i] - my), 0), den = Math.sqrt(rx.reduce((s, v) => s + (v - mx) ** 2, 0) * ry.reduce((s, v) => s + (v - my) ** 2, 0));
+  return den ? num / den : null; };
 
 for (const f of files) {
   const j = JSON.parse(readFileSync(f, "utf8"));
@@ -29,6 +35,10 @@ for (const f of files) {
   const add = (measure, value, system = "", room = "") => value != null && rows.push({ participant: P, system, room, measure, value });
 
   for (const b of S.blocks) {
+    // Behavioural load at the end of each artwork (both arms), averaged over the block.
+    const ends = b.artworks.map((a) => a.p_load_end).filter((x) => x != null);
+    const pl = ends.length ? mean(ends) : null;
+    if (pl != null) { add("behavioural_load_mean", +pl.toFixed(3), b.system, b.room); loadPairs.push({ pl, tlx: b.tlx_mental_demand, paas: b.paas }); }
     add("tlx_mental_demand", b.tlx_mental_demand, b.system, b.room);
     add("paas_effort", b.paas, b.system, b.room);
     for (const a of b.artworks) add("interaction_time_s", a.interaction_s, b.system, b.room);
@@ -85,6 +95,8 @@ const lines = [
   "", "## Algorithm measures per session", "",
   "| Participant | System | Decisions | Auto switches | Overrides | Policy compute median / max (ms) | Shown on screen median / max (ms) | Explained decisions | Facts filtered |", "|---|---|---|---|---|---|---|---|---|",
   ...perP.flatMap((p) => Object.entries(p.alg).map(([s, a]) => `| ${p.P} | ${s} | ${a.decisions} | ${a.switches} | ${a.overrides} | ${f1(a.compute_ms_median, 2)} / ${f1(a.compute_ms_max, 2)} | ${f1(a.latency_ms_median)} / ${f1(a.latency_ms_max)} | ${a.explained == null ? "–" : (100 * a.explained).toFixed(0) + "%"} | ${a.filtered_facts} |`)),
+  "", "## Validity of the behavioural load estimate", "",
+  `Blocks with a load estimate: ${loadPairs.length}. Spearman correlation of the block's mean behavioural P(high load) with Raw NASA-TLX mental demand: ${f1(spearman(loadPairs.map((p) => p.pl), loadPairs.map((p) => p.tlx)), 2)}; with Paas effort: ${f1(spearman(loadPairs.map((p) => p.pl), loadPairs.map((p) => p.paas)), 2)}. Load is taken at the end of each artwork in both arms. A clear positive correlation across participants supports using the estimate; otherwise its weights are re-fitted on the pilot data or the estimate is reported as not validated.`,
   "", "Policy compute = time inside the policy call; shown on screen = until the next painted frame (inflated when the browser renders in the background).",
   "Recall items are scored automatically by keyword groups; check them by hand. Recall is attributed to a condition only when its artwork appeared in exactly one condition (\"multiple\" otherwise, e.g. while one artwork is reused in testing).",
   "Inference (participant-aware effect estimates with 95% CIs) is run on the CSV, e.g. a mixed-effects model with participant and artwork as random effects.",

@@ -33,7 +33,7 @@
    "suitable_audio_only": 0.6793201208334051,
    "suitable_fatigue": 0.5274419051094189,
    "us_median": 0.10000000000331966,
-   "us_p99": 1.2999999999934175
+   "us_p99": 1.5000000000071623
   },
   {
    "policy": "Rule-based (starts from stated choice)",
@@ -46,7 +46,7 @@
    "suitable_audio_only": 0.673447777244981,
    "suitable_fatigue": 0.5758406458036617,
    "us_median": 0.2000000000066393,
-   "us_p99": 1.0000000000047748
+   "us_p99": 0.9000000000014552
   },
   {
    "policy": "Fixed-step utility (current)",
@@ -58,8 +58,8 @@
    "switches": 0.4825,
    "suitable_audio_only": 0.551857940037742,
    "suitable_fatigue": 0.3860838351510994,
-   "us_median": 4.400000000003956,
-   "us_p99": 21.700000000009823
+   "us_median": 3.899999999987358,
+   "us_p99": 18.900000000002137
   },
   {
    "policy": "Bayesian, neutral prior",
@@ -71,8 +71,21 @@
    "switches": 0.0105,
    "suitable_audio_only": 0.5558673459411515,
    "suitable_fatigue": 0.39175611719313336,
-   "us_median": 413.70000000097207,
-   "us_p99": 1205.1000000001295
+   "us_median": 462.99999999973807,
+   "us_p99": 1353.9999999999281
+  },
+  {
+   "policy": "Bayesian, practice behaviour as prior (no question)",
+   "suitable": 0.4593710468854998,
+   "suitable_ci": 0.010713332966663665,
+   "suitable_late": 0.4543185655847416,
+   "suitable_late_ci": 0.013333089187707804,
+   "effort": 2.8415,
+   "switches": 0.0075,
+   "suitable_audio_only": 0.5415847953884939,
+   "suitable_fatigue": 0.40854294625250487,
+   "us_median": 461.99999999953434,
+   "us_p99": 1329.3000000048778
   },
   {
    "policy": "Bayesian, stated choice as prior",
@@ -84,8 +97,8 @@
    "switches": 0.0145,
    "suitable_audio_only": 0.650609229302934,
    "suitable_fatigue": 0.5240094244003902,
-   "us_median": 418.20000000006985,
-   "us_p99": 1187.5
+   "us_median": 460.6000000057975,
+   "us_p99": 1300.4999999975553
   },
   {
    "policy": "Bayesian, stated prior, no history (ablation)",
@@ -97,8 +110,8 @@
    "switches": 0.0085,
    "suitable_audio_only": 0.6620186955161899,
    "suitable_fatigue": 0.5454171355831982,
-   "us_median": 413.5000000023865,
-   "us_p99": 1151.799999999639
+   "us_median": 478.9000000018859,
+   "us_p99": 1539.8999999888474
   }
  ]
 }

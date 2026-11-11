@@ -10,6 +10,7 @@ import { MotionMeter } from "./motion.js";
 import { selectSegments } from "./filter.js";
 import { FixedSession } from "./policy-fixed.js";
 import { initStudy } from "./study-ui.js";
+import { LoadEstimator } from "./load.js";
 
 const BUILD = "spike-2026-11-11c";
 const $ = (s) => document.querySelector(s);
@@ -31,10 +32,13 @@ let session, content, art, targetAspect = 1.33, mindData = null;
 let tracking = false, simulatedTracking = false, forceNoisy = false;
 let visit = 0, pendingRecognition = true, frames = 0, lastLatency = null, trackedSince = null, dwellSent = false;
 let panelObj = null, pinned = params.has("pin") || STUDY, side = "right";
-let known = [];                 // facts the visitor reported knowing (prior-knowledge checklist)
+let known = [];                 // fact tags the visitor reported knowing (single-artwork checklist)
+let knownArtworks = [];         // paintings the visitor already knows well (multi-artwork study)
 let artCtx = { known: [], pMoving: 0, pNoisy: 0 };   // context frozen at recognition, used by the filter
 let artworkLabel = null, recognizedAt = null, onRecognized = null;
 meta.exposure = [];             // which segment was shown, in which format (for exposure-based recall)
+let load = new LoadEstimator();  // behavioural cognitive-load estimate, one per session
+let segShownAt = null;
 
 // ---------------------------------------------------------------- content player
 const player = {
@@ -50,6 +54,7 @@ const player = {
     render();
     const sg = this.segs()[this.idx];
     if (sg && !this.finished) meta.exposure.push({ t: now(), artwork_id: session?.artwork, seg: sg.id, format: this.action });
+    segShownAt = performance.now();
     if (this.isAudio() && !this.finished) {
       const tok = this.token, seg = this.segs()[this.idx];
       speak(seg.text, () => { if (tok === this.token) segmentEnded(); });
@@ -80,8 +85,9 @@ function makeObs(artworkId) {
   if (simulatedTracking) flags.push("tracking_simulated");
   const pm = motion.available ? +motion.pMoving().toFixed(3) : 0;
   if (!motion.available) flags.push("motion_missing");
+  const pl = +load.pHigh().toFixed(3);
   return { timestamp: now(), artwork_id: artworkId, tracking_valid: tracking, noise_or_missing: lvl,
-    optional_sensor_features: { p_moving: pm }, quality_flags: flags };
+    optional_sensor_features: { p_moving: pm, p_load: pl }, quality_flags: flags };
 }
 
 // Latency = policy evaluation + DOM update + next painted frame.
@@ -99,8 +105,11 @@ function recognize() {
   const tStart = performance.now();
   const obs = makeObs(artworkLabel || `${art.id}-visit${visit}`);
   const pn = obs.noise_or_missing == null ? C.P_NOISY_UNKNOWN : pNoisy(C, obs.noise_or_missing);
-  artCtx = { known, pMoving: obs.optional_sensor_features.p_moving, pNoisy: pn };
+  const knownHere = knownArtworks.includes(art.id) ? art.detail.filter((d) => d.priority !== 1).map((d) => d.tag) : [];
+  artCtx = { known: [...known, ...knownHere], pMoving: obs.optional_sensor_features.p_moving, pNoisy: pn };
+  load.newArtwork();
   const d = session.recognize(obs);
+  if (d) { load.context({ pMoving: artCtx.pMoving, pNoisy: pn, audio: d.action?.endsWith("audio") }); d.load_terms = load.terms(); }
   if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);   // policy only, independent of rendering
   if (d) { d.quality_flags = obs.quality_flags; d.filtered = selectSegments(art, d.action, artCtx).filtered; player.start(d.action, 0); }
   recognizedAt = now();
@@ -125,8 +134,12 @@ function segmentEnded() {
 function onControl(act) {
   if (!session || !player.action) return;
   const mod = player.action.split("_")[1];
-  if (act === "next") { player.stop(); segmentEnded(); }
-  else if (act === "replay") { session.event("replay", now()); player.start(player.action, 0); }
+  if (act === "next") {
+    const sg = player.segs()[player.idx];
+    if (sg && segShownAt != null && !player.isAudio()) load.segmentRead(sg.text, (performance.now() - segShownAt) / 1000);
+    player.stop(); segmentEnded();
+  }
+  else if (act === "replay") { session.event("replay", now()); load.replay(); player.start(player.action, 0); }
   else if (act === "skip") { session.event("skip_detail", now()); player.finish(false); }
   else if (act === "more") {
     session.event("request_more", now());
@@ -140,6 +153,7 @@ function onControl(act) {
 function onOverride(action) {
   if (!session || !player.action || action === player.action) return;
   const tStart = performance.now();
+  load.stepDown(player.action, action);
   const d = session.event(`override:${action}`, now());
   player.start(action, player.finished ? 0 : player.idx);
   stamp(d, tStart); updateHud();
@@ -244,43 +258,73 @@ async function sha256(buf) {
   return [...new Uint8Array(h)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
 }
 
-async function loadTarget() {
-  for (const url of [art.target, art.fallback_target]) {
+async function loadImage(a) {
+  for (const url of [a.target, a.fallback_target].filter(Boolean)) {
     const res = await fetch(url, { cache: "no-cache" }).catch(() => null);
     if (!res || !res.ok) continue;
     const bytes = await res.arrayBuffer();
-    const blobUrl = URL.createObjectURL(new Blob([bytes]));
-    const img = await new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = blobUrl; });
-    targetAspect = img.naturalHeight / img.naturalWidth;
-    meta.target = { url, width: img.naturalWidth, height: img.naturalHeight };
-    // 1) precompiled file next to the image  2) browser cache  3) compile now (~10–60 s on a phone)
-    const pre = await fetch(url.replace(/\.(jpe?g|png)$/i, ".mind")).catch(() => null);
-    if (pre && pre.ok) { mindData = await pre.arrayBuffer(); meta.target.source = "precompiled"; }
-    else {
-      const key = `/mind-cache/${await sha256(bytes)}.mind`;
-      const cache = "caches" in window ? await caches.open("ca-guide") : null;
-      const hit = cache && (await cache.match(key));
-      if (hit) { mindData = await hit.arrayBuffer(); meta.target.source = "cache"; }
-      else {
-        const tC = performance.now();
-        const compiler = new Compiler();
-        await compiler.compileImageTargets([img], (p) => busy(`Preparing artwork target… ${p.toFixed(0)}%`));
-        mindData = (await compiler.exportData()).buffer;
-        meta.target.source = "compiled_in_browser"; meta.target.compile_ms = Math.round(performance.now() - tC);
-        if (cache) await cache.put(key, new Response(mindData));
-      }
-    }
-    return URL.createObjectURL(new Blob([mindData]));
+    const img = await new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = URL.createObjectURL(new Blob([bytes])); });
+    a._aspect = img.naturalHeight / img.naturalWidth;
+    return { url, bytes, img };
   }
-  throw new Error("No target image found (targets/artwork.jpg or targets/placeholder.jpg).");
+  throw new Error(`No target image for ${a.id} (${a.target}).`);
+}
+
+// All artworks go into one MindAR file; target index i = content.artworks[i].
+// 1) precompiled file  2) browser cache  3) compile now (about 15 s per image on a laptop, longer on a phone)
+async function loadTargets() {
+  const list = content.artworks;
+  const imgs = [];
+  for (const a of list) imgs.push(await loadImage(a));
+  meta.target = { artworks: list.map((a, i) => ({ id: a.id, url: imgs[i].url, w: imgs[i].img.naturalWidth, h: imgs[i].img.naturalHeight })) };
+  const preUrl = list.length === 1 ? imgs[0].url.replace(/\.(jpe?g|png)$/i, ".mind") : content.targets_mind || "targets/targets.mind";
+  const pre = await fetch(preUrl).catch(() => null);
+  if (pre && pre.ok) { mindData = await pre.arrayBuffer(); meta.target.source = "precompiled"; }
+  else {
+    const key = `/mind-cache/${(await Promise.all(imgs.map((x) => sha256(x.bytes)))).join("-").slice(0, 120)}.mind`;
+    const cache = "caches" in window ? await caches.open("ca-guide") : null;
+    const hit = cache && (await cache.match(key));
+    if (hit) { mindData = await hit.arrayBuffer(); meta.target.source = "cache"; }
+    else {
+      const tC = performance.now();
+      const compiler = new Compiler();
+      await compiler.compileImageTargets(imgs.map((x) => x.img), (pr) => busy(`Preparing ${list.length} artwork target(s)… ${pr.toFixed(0)}%`));
+      mindData = (await compiler.exportData()).buffer;
+      meta.target.source = "compiled_in_browser"; meta.target.compile_ms = Math.round(performance.now() - tC);
+      if (cache) await cache.put(key, new Response(mindData));
+    }
+  }
+  targetAspect = art._aspect;
+  return URL.createObjectURL(new Blob([mindData]));
 }
 
 // ---------------------------------------------------------------- start-up
 function busy(msg) { $("#busy").classList.toggle("hidden", !msg); $("#busyMsg").textContent = msg || ""; }
-let anchorRef = null;
+let anchorRef = null, anchors = [];
+let expectedArtId = null, onWrongArtwork = null;
+const artIndex = (id) => content.artworks.findIndex((a) => a.id === id);
 
-function makeSession(policyName, { familiarity = 4, accessibility = [], format_preference = null } = {}) {
-  const user = { familiarity, accessibility, format_preference };
+// A painting was recognised (target index i). In the study only the expected painting counts;
+// in the demo, pointing at another painting starts that painting.
+function foundArtwork(i) {
+  const a = content.artworks[i];
+  if (expectedArtId && a.id !== expectedArtId) { if (onWrongArtwork) onWrongArtwork(a); return; }
+  const changed = a !== art;
+  art = a; targetAspect = a._aspect || targetAspect;
+  anchorRef = anchors[i] || anchorRef;
+  if (panelObj && !pinned && panelObj.parent !== anchorRef.group) { panelObj.parent?.remove(panelObj); anchorRef.group.add(panelObj); }
+  tracking = true; trackedSince = performance.now();
+  meta.events.push({ t: now(), e: "target_found", artwork: a.id });
+  if (!STUDY && changed && player.action) {           // demo: a new painting -> new artwork
+    if (player.action.startsWith("detailed") && !player.finished) session.event("left_early", now());
+    player.stop(); player.action = null; pendingRecognition = true;
+  }
+  if (pendingRecognition) recognize();
+  updateHud();
+}
+
+function makeSession(policyName, { familiarity = 4, accessibility = [], format_preference = null, prior = null } = {}) {
+  const user = { familiarity, accessibility, format_preference, ...(prior || {}) };
   if (policyName === "bayes") return new BayesSession(user, { config: C, clock: now });
   if (policyName === "fixed") return new FixedSession(user, { clock: now });
   return new Session(newUserState(user), { config: C, clock: now });   // "fixedstep": draft-proposal policy
@@ -310,11 +354,12 @@ async function initSensors() {
   try { await noise.start(); } catch (e) { meta.events.push({ t: now(), e: "mic_unavailable", detail: String(e) }); }
 
   busy("Loading artwork target…");
-  const src = await loadTarget();
+  const src = await loadTargets();
 
   if (params.has("nocam")) {   // UI/policy testing without a camera (desktop); decisions are flagged tracking_simulated
     meta.events.push({ t: now(), e: "nocam_mode" });
     anchorRef = { onTargetLost: () => { tracking = false; updateHud(); } };
+    anchors = content.artworks.map(() => anchorRef);
     const loop = () => { frames++; requestAnimationFrame(loop); }; loop();
     setPinned(true); busy(null);
     setInterval(tick, 1000);
@@ -326,15 +371,14 @@ async function initSensors() {
   const mindar = new MindARThree({ container: $("#ar"), imageTargetSrc: src, uiLoading: "no", uiScanning: "no",
     filterMinCF: 0.0001, filterBeta: 0.001 });
   const { renderer, cssRenderer, scene, cssScene, camera } = mindar;
-  anchorRef = mindar.addCSSAnchor(0);
   const tCam = performance.now();
-  anchorRef.onTargetFound = () => {
-    if (!meta.first_detection_ms) meta.first_detection_ms = Math.round(performance.now() - tCam);
-    tracking = true; simulatedTracking = false; trackedSince = performance.now(); meta.events.push({ t: now(), e: "target_found" });
-    if (pendingRecognition) recognize();
-    updateHud();
-  };
-  anchorRef.onTargetLost = () => { tracking = false; trackedSince = null; meta.events.push({ t: now(), e: "target_lost" }); updateHud(); };
+  anchors = content.artworks.map((a, i) => {
+    const an = mindar.addCSSAnchor(i);
+    an.onTargetFound = () => { if (!meta.first_detection_ms) meta.first_detection_ms = Math.round(performance.now() - tCam); simulatedTracking = false; foundArtwork(i); };
+    an.onTargetLost = () => { if (an !== anchorRef) return; tracking = false; trackedSince = null; meta.events.push({ t: now(), e: "target_lost", artwork: a.id }); updateHud(); };
+    return an;
+  });
+  anchorRef = anchors[artIndex(art.id)] || anchors[0];
   await mindar.start();
   meta.camera_start_ms = Math.round(performance.now() - tCam);
   renderer.setAnimationLoop(() => { frames++; renderer.render(scene, camera); cssRenderer.render(cssScene, camera); });
@@ -425,7 +469,9 @@ if (DEBUG || params.has("nocam")) {   // desktop testing without the printed art
   if (!pinned) pinned = true;
 }
 
-const resp = await fetch("content/artworks.json");
+// ?content=<file> loads another content file (used for testing several artworks).
+const contentUrl = params.get("content") && /^content\/[\w.-]+\.json$/.test(params.get("content")) ? params.get("content") : "content/artworks.json";
+const resp = await fetch(contentUrl);
 content = await resp.json();
 art = content.artworks[0];
 bindSettings();
@@ -442,24 +488,27 @@ if (STUDY) {
     art, content, meta, now, $, busy, metrics,
     initSensors,
     beginSystem(system, user) {              // one session per system; its history carries across its two blocks
-      known = user.known || [];
+      known = user.known || []; knownArtworks = user.known_artworks || [];
       session = makeSession(system === "adaptive" ? "bayes" : "fixed", user);
+      session.loadEstimator = new LoadEstimator(); load = session.loadEstimator;
       return session;
     },
-    setSession(s) { session = s; },
-    expectArtwork(label, cb) {               // wait for the camera to recognise the painting
+    setSession(s) { session = s; load = s.loadEstimator || new LoadEstimator(); },
+    expectArtwork(label, artId, cb, onWrong) {   // wait for the camera to recognise this painting
       artworkLabel = label; onRecognized = cb; pendingRecognition = true;
+      expectedArtId = artIndex(artId) >= 0 ? artId : null; onWrongArtwork = onWrong;
+      if (expectedArtId && art.id !== expectedArtId) { art = content.artworks[artIndex(artId)]; tracking = false; }
       if (tracking) recognize();
     },
     finishArtwork() {
       if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
       player.stop(); player.action = null; $("#panel").classList.add("hidden");
-      const t = { recognized_t: recognizedAt, done_t: now() };
-      artworkLabel = null; onRecognized = null; pendingRecognition = false; recognizedAt = null;
+      const t = { recognized_t: recognizedAt, done_t: now(), p_load_end: +load.pHigh().toFixed(3), load_terms: load.terms() };
+      artworkLabel = null; onRecognized = null; pendingRecognition = false; recognizedAt = null; expectedArtId = null; onWrongArtwork = null;
       return t;
     },
     simulateTarget: params.has("nocam")
-      ? () => { tracking = true; simulatedTracking = true; trackedSince = performance.now(); if (pendingRecognition) recognize(); }
+      ? () => { simulatedTracking = true; foundArtwork(expectedArtId ? artIndex(expectedArtId) : 0); }
       : null,
   });
 }

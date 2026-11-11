@@ -43,6 +43,8 @@ export function bayesConfig() {
     MOTION_TEXT_PENALTY: 0.5,    // [N] text cost x (1 + 0.5 * P(moving))
     SWITCH_CONFIDENCE: 0.75,     // [N] P(improvement) required for an automatic switch
     PREF_PSEUDO: 2.0,            // [N] weight of the format chosen on the practice artwork
+    LOAD_WEIGHT: 0.5,            // [N] scales the Appendix A high-minus-low demand cost by excess load
+    LOAD_BASE: 0.168,            // P(high load) with no evidence (= logistic(B0) in load.js)
     MC_SAMPLES: 400,
   };
 }
@@ -102,8 +104,10 @@ function familiarityTerm(C, s) {
   return C.FAMILIARITY_DETAIL_PENALTY_MAX * Math.max(0, s.familiarity - 4) / 3.0;   // as in policy.js
 }
 
-// Utility of each feasible action for given parameter values (theta_d, theta_a, pNoisy, pMoving).
-function utilityAt(C, s, a, td, ta, pn, pm, current) {
+// Utility of each feasible action for given parameter values (theta_d, theta_a, pNoisy, pMoving, pLoad).
+// Behavioural load: excess P(high load) above its no-evidence level adds a share of the Appendix A
+// cost difference C_HIGH - C_LOW, which is largest for detailed content.
+function utilityAt(C, s, a, td, ta, pn, pm, current, pl = 0) {
   const dens = a.split("_")[0], aud = a.endsWith("audio");
   let I = dens === "brief" ? C.I_BRIEF : td * C.V_WANTED + (1 - td) * C.V_UNWANTED - familiarityTerm(C, s);
   const M = aud ? C.G_MODALITY * (ta - 0.5) : 0;
@@ -116,19 +120,20 @@ function utilityAt(C, s, a, td, ta, pn, pm, current) {
                      : C.TEXT_MULT * (1 + C.MOTION_TEXT_PENALTY * pm);
     D = C.D_BASE[dens] * mult;
   }
+  const Lc = s.p_high == null ? C.LOAD_WEIGHT * Math.max(0, pl - C.LOAD_BASE) * (C.C_HIGH[a] - C.C_LOW[a]) : 0;
   const S = current != null && a !== current ? C.C_SWITCH : 0;
-  return { U: I + M - D - S, I, M, D, S };
+  return { U: I + M - D - Lc - S, I, M, D, L: Lc, S };
 }
 
 export function evaluate(C, s, ctx, current, { useHistory = true, seed = 1, base = null } = {}) {
   // No-history ablation: forget behaviour evidence but keep the starting prior (incl. stated preference).
   const b0 = base || { a_d: C.PRIOR_DETAIL[0], b_d: C.PRIOR_DETAIL[1], a_a: C.PRIOR_AUDIO[0], b_a: C.PRIOR_AUDIO[1] };
   const st = useHistory ? s : { ...s, ...b0 };
-  const pn = pNoisy(C, ctx.noise), pm = ctx.pMoving ?? 0;
+  const pn = pNoisy(C, ctx.noise), pm = ctx.pMoving ?? 0, pl = ctx.pLoad ?? 0;
   const md = st.a_d / (st.a_d + st.b_d), ma = st.a_a / (st.a_a + st.b_a);
   const acts = feasibleActions(st);
   const utils = {}, terms = {};
-  for (const a of acts) { const r = utilityAt(C, st, a, md, ma, pn, pm, current); utils[a] = r.U; terms[a] = r; }
+  for (const a of acts) { const r = utilityAt(C, st, a, md, ma, pn, pm, current, pl); utils[a] = r.U; terms[a] = r; }
   const best = argmax(utils);
   // Monte Carlo over the posterior: how often is `best` really better than `ref`?
   const ref = current && current !== best ? current : null;
@@ -139,14 +144,15 @@ export function evaluate(C, s, ctx, current, { useHistory = true, seed = 1, base
     const noisyDraw = ctx.noise == null ? (rnd() < C.P_NOISY_UNKNOWN ? 1 : 0)
       : (ctx.noise + C.NOISE_SD_DB * Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd()) > C.NOISY_THRESHOLD_DBA ? 1 : 0);
     const u = {};
-    for (const a of acts) u[a] = utilityAt(C, st, a, td, ta, noisyDraw, pm, current).U;
+    for (const a of acts) u[a] = utilityAt(C, st, a, td, ta, noisyDraw, pm, current, pl).U;
     if (ref && u[best] > u[ref]) wins++;
     if (argmax(u) === best) bestWins++;
   }
   const flags = [];
   if (ctx.noise == null) flags.push("noise_unknown");
   flags.push(st.p_high != null ? "p_high_valid" : "p_high_unknown");
-  return { utils, terms, best, flags, pNoisy: pn, pMoving: pm, meanDetail: md, meanAudio: ma,
+  if (pl > C.LOAD_BASE) flags.push("behavioural_load_estimate");
+  return { utils, terms, best, flags, pNoisy: pn, pMoving: pm, pLoad: pl, meanDetail: md, meanAudio: ma,
     pImprove: ref ? wins / C.MC_SAMPLES : null, pBest: bestWins / C.MC_SAMPLES };
 }
 
@@ -164,7 +170,7 @@ export class BayesSession {
 
   _ctx(obs) {
     const f = obs.optional_sensor_features || {};
-    return { noise: obs.noise_or_missing ?? null, pMoving: f.p_moving ?? 0 };
+    return { noise: obs.noise_or_missing ?? null, pMoving: f.p_moving ?? 0, pLoad: f.p_load ?? 0 };
   }
   _state(obs) {
     const s = clone(this.frozen);
@@ -177,7 +183,7 @@ export class BayesSession {
       utility_by_action: Object.fromEntries(Object.entries(ev?.utils || {}).map(([k, v]) => [k, r4(v)])),
       reason, flags: ev?.flags || [], noise_dba: obs.noise_or_missing ?? null, policy: "bayes",
       belief: { detail_mean: r4(this.frozen.a_d / (this.frozen.a_d + this.frozen.b_d)), audio_mean: r4(this.frozen.a_a / (this.frozen.a_a + this.frozen.b_a)) },
-      p_noisy: ev ? r4(ev.pNoisy) : null, confidence: ev ? (ev.pImprove ?? ev.pBest) : null };
+      p_noisy: ev ? r4(ev.pNoisy) : null, p_load: ev ? r4(ev.pLoad) : null, confidence: ev ? (ev.pImprove ?? ev.pBest) : null };
     if (action) { d.modality = action.split("_")[1]; d.density = action.split("_")[0]; }
     this.log.push(d); if (ev) this.lastUtils = ev;
     return d;

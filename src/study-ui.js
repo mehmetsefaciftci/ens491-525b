@@ -2,9 +2,13 @@
 // blocks (system x room) with per-artwork interaction time -> Raw NASA-TLX mental demand and Paas
 // after each block -> SUS after each system -> core/optional recall -> results file.
 // The participant sees the systems as "Guide A" and "Guide B"; the condition names stay in the log.
-import { blockOrder, assignArtworks, SUS_ITEMS, susScore, scoreRecall } from "./study.js";
+import { blockOrder, assignArtworks, SUS_ITEMS, susScore, scoreRecall, practicePrior } from "./study.js";
+import { words } from "./load.js";
 
 const PER_BLOCK = 2;
+// Adaptive arm prior: "practice" = inferred from practice behaviour (default, no question used);
+// "stated" = the format the participant picked. Set with ?prior=stated. The fixed arm always uses the pick.
+
 const PRACTICE = {
   brief: "Practice painting: a harbour at sunset, painted in oil around 1900.",
   detailed: "Practice painting: a harbour at sunset, painted in oil around 1900. The painter worked outdoors and finished the picture in one evening. Small boats in the foreground show that the harbour was still used for fishing.",
@@ -12,8 +16,9 @@ const PRACTICE = {
 
 export function initStudy(api) {
   const { $, now } = api;
+  const PRIOR_MODE = new URLSearchParams(location.search).get("prior") === "stated" ? "stated" : "practice";
   const sheet = $("#study"), bar = $("#studyBar");
-  const S = { started_at: new Date().toISOString(), blocks: [], sus: {}, recall: [], sessions: {} };
+  const S = { started_at: new Date().toISOString(), blocks: [], sus: {}, recall: [], sessions: {}, adaptive_prior_mode: PRIOR_MODE };
   let sensorsReady = false, order, artworksPerBlock, guideName = {};
 
   const show = (html) => { sheet.innerHTML = html; sheet.classList.remove("hidden"); bar.classList.add("hidden"); sheet.scrollTop = 0; };
@@ -40,22 +45,28 @@ export function initStudy(api) {
 
   // ------------------------------------------------------------------ 2. profile
   function profile() {
-    const kn = (api.art.prior_knowledge || []).map((k) => `<label><input type="checkbox" name="kn" value="${k.tag}" /> ${k.label}</label>`).join("");
+    // One painting: ask about its facts. Several paintings: ask which paintings the visitor already knows well.
+    const multi = api.content.artworks.length > 1;
+    const kn = multi
+      ? api.content.artworks.map((a) => `<label><input type="checkbox" name="ka" value="${a.id}" /> ${a.title} (${a.artist})</label>`).join("")
+      : (api.art.prior_knowledge || []).map((k) => `<label><input type="checkbox" name="kn" value="${k.tag}" /> ${k.label}</label>`).join("");
     show(`<h1>About you</h1>
       <label>Participant number (from the experimenter) <input type="number" id="pid" min="1" inputmode="numeric" /></label>
       <div class="q">How familiar are you with Ottoman painting? ${scale("fam", 1, 7, "not at all", "very")}</div>
-      <fieldset><legend>Do you need a format?</legend>
-        <label><input type="radio" name="acc" value="" checked /> no preference</label>
-        <label><input type="radio" name="acc" value="no_audio" /> text only</label>
-        <label><input type="radio" name="acc" value="no_text" /> audio only</label></fieldset>
-      <fieldset><legend>Before today I already knew…</legend>${kn}</fieldset>
+      <details><summary>Accessibility (optional)</summary>
+        <p class="fine">Only if you cannot use one of the formats, for example because of hearing or vision. The guide otherwise chooses by itself.</p>
+        <label><input type="radio" name="acc" value="" checked /> I can use both text and audio</label>
+        <label><input type="radio" name="acc" value="no_audio" /> I need text (cannot use audio)</label>
+        <label><input type="radio" name="acc" value="no_text" /> I need audio (cannot read the text)</label></details>
+      <fieldset><legend>${multi ? "Paintings I already know well (optional)" : "Before today I already knew… (optional)"}</legend>${kn}</fieldset>
       <p id="msg" class="msg"></p><button id="go" class="primary">Continue</button>`);
     $("#go").onclick = () => {
       const pid = parseInt($("#pid").value, 10), fam = val("fam");
       if (!(pid >= 1) || !fam) { $("#msg").textContent = "Please enter the participant number and answer the familiarity question."; return; }
       const acc = sheet.querySelector("input[name=acc]:checked").value;
       S.participant = { number: pid, familiarity: fam, accessibility: acc ? [acc] : [],
-        known: [...sheet.querySelectorAll("input[name=kn]:checked")].map((x) => x.value) };
+        known: [...sheet.querySelectorAll("input[name=kn]:checked")].map((x) => x.value),
+        known_artworks: [...sheet.querySelectorAll("input[name=ka]:checked")].map((x) => x.value) };
       order = blockOrder(pid);
       const ids = Array.from({ length: 4 * PER_BLOCK }, (_, i) => api.content.artworks[i % api.content.artworks.length].id + (api.content.artworks.length < 4 * PER_BLOCK ? `#${i + 1}` : ""));
       artworksPerBlock = assignArtworks(ids, pid, PER_BLOCK);
@@ -75,20 +86,36 @@ export function initStudy(api) {
       <div id="sample" class="consent">Tap a format to try it.</div>
       <fieldset><legend>My preferred format</legend>${opts.map((a) => `<label><input type="radio" name="pref" value="${a}" /> ${a.replace("_", " ")}</label>`).join("")}</fieldset>
       <p id="msg" class="msg"></p><button id="go" class="primary">Continue</button>`);
+    // Each try is measured: how long a sample stayed on screen or was listened to, against its
+    // expected duration, and whether audio played to the end. This is the implicit preference.
+    const trials = []; let cur = null;
+    const close = () => {
+      if (!cur) return;
+      const el = (performance.now() - cur.t0) / 1000;
+      trials.push({ format: cur.format, seconds: +el.toFixed(2), ratio: +(cur.completed ? Math.max(1, el / cur.expected) : el / cur.expected).toFixed(2), completed: cur.completed });
+      cur = null;
+    };
     sheet.querySelectorAll("[data-try]").forEach((b) => (b.onclick = () => {
-      const a = b.dataset.try, text = PRACTICE[a.split("_")[0]];
+      close();
+      const a = b.dataset.try, text = PRACTICE[a.split("_")[0]], aud = a.endsWith("audio");
       if ("speechSynthesis" in window) speechSynthesis.cancel();
-      if (a.endsWith("audio") && "speechSynthesis" in window) {
+      cur = { format: a, t0: performance.now(), expected: Math.max(2, words(text) / (aud ? 2.6 : 3.3)), completed: false };
+      const me = cur;
+      if (aud && "speechSynthesis" in window) {
         $("#sample").textContent = "🔊 (listening…)";
-        const u = new SpeechSynthesisUtterance(text); u.lang = api.content.lang || "en-US"; speechSynthesis.speak(u);
+        const u = new SpeechSynthesisUtterance(text); u.lang = api.content.lang || "en-US";
+        u.onend = () => { if (cur === me) { me.completed = true; close(); $("#sample").textContent = "🔊 (finished)"; } };
+        speechSynthesis.speak(u);
       } else $("#sample").textContent = text;
-      (S.practice_tried ||= []).push(a);
     }));
     $("#go").onclick = () => {
       const p = sheet.querySelector("input[name=pref]:checked");
       if (!p) { $("#msg").textContent = "Please choose a format."; return; }
       if ("speechSynthesis" in window) speechSynthesis.cancel();
+      close();
       S.participant.format_preference = p.value;
+      S.practice_trials = trials;
+      S.practice_prior = practicePrior(trials);
       blockIntro(0);
     };
   }
@@ -96,9 +123,8 @@ export function initStudy(api) {
   // ------------------------------------------------------------------ 4. blocks
   function blockIntro(b) {
     const blk = order[b];
-    show(`<h1>Part ${b + 1} of 4</h1><p>You will use <b>${guideName[blk.system]}</b> with ${PER_BLOCK} paintings.</p>
-      <div class="consent"><b>Experimenter:</b> room condition <b>${blk.room.toUpperCase()}</b> —
-      ${blk.room === "noise" ? "start the museum noise recording now." : "make sure the noise recording is off."}</div>
+    show(`<h1>Part ${b + 1} of 4</h1><p>You will use <b>${guideName[blk.system]}</b> with ${PER_BLOCK} paintings. The guide decides by itself how to present each painting; you can always change it with the buttons.</p>
+      <details class="fine"><summary>For the experimenter</summary>Room condition: ${blk.room === "noise" ? "start the museum noise recording" : "noise recording off"}. The app measures the room level itself.</details>
       <button id="go" class="primary">Start part ${b + 1}</button>`);
     $("#go").onclick = async () => {
       $("#go").disabled = true;
@@ -106,8 +132,11 @@ export function initStudy(api) {
         try { await api.initSensors(); sensorsReady = true; }
         catch (e) { $("#go").disabled = false; sheet.insertAdjacentHTML("beforeend", `<p class="msg">Could not start: ${e.message || e}</p>`); return; }
       }
-      const user = { familiarity: S.participant.familiarity, accessibility: S.participant.accessibility,
-        format_preference: S.participant.format_preference, known: S.participant.known };
+      const pp = S.practice_prior || { a_d: 0, b_d: 0, a_a: 0, b_a: 0 };
+      const adaptivePractice = blk.system === "adaptive" && PRIOR_MODE === "practice";
+      const user = { familiarity: S.participant.familiarity, accessibility: S.participant.accessibility, known: S.participant.known, known_artworks: S.participant.known_artworks,
+        format_preference: adaptivePractice ? null : S.participant.format_preference,
+        prior: adaptivePractice ? { a_d: 2 + pp.a_d, b_d: 2 + pp.b_d, a_a: 2 + pp.a_a, b_a: 2 + pp.b_a } : null };
       if (!S.sessions[blk.system]) S.sessions[blk.system] = api.beginSystem(blk.system, user);
       else api.setSession(S.sessions[blk.system]);
       api.meta.events.push({ t: now(), e: "block_start", block: b + 1, ...blk });
@@ -118,18 +147,25 @@ export function initStudy(api) {
 
   function artwork(b, k) {
     const label = `${artworksPerBlock[b][k]}-p${b + 1}`;
-    bar.innerHTML = `<span class="grow">Part ${b + 1}/4 · painting ${k + 1}/${PER_BLOCK}: point the phone at the painting.</span>`
+    const artId = artworksPerBlock[b][k].replace(/#\d+$/, "");
+    const a = api.content.artworks.find((x) => x.id === artId);
+    const prompt = `Part ${b + 1}/4 · painting ${k + 1}/${PER_BLOCK}: point the phone at <b>${a ? a.title : "the painting"}</b>.`;
+    bar.innerHTML = `<span class="grow">${prompt}</span>`
       + (api.simulateTarget ? `<button id="sim" class="small">Simulate painting</button>` : "");
     bar.classList.remove("hidden");
     if (api.simulateTarget) $("#sim").onclick = api.simulateTarget;
-    api.expectArtwork(label, (d) => {
+    api.expectArtwork(label, artId, (d) => {
       bar.innerHTML = `<span class="grow">${guideName[order[b].system]} · painting ${k + 1}/${PER_BLOCK}. Tap Done when you have finished with this painting.</span><button id="done" class="primary small">Done</button>`;
       $("#done").onclick = () => {
         const t = api.finishArtwork();
         S.blocks[b].artworks.push({ label, first_format: d?.action ?? null, recognized_t: t.recognized_t, done_t: t.done_t,
-          interaction_s: t.recognized_t != null ? +(t.done_t - t.recognized_t).toFixed(2) : null });
+          interaction_s: t.recognized_t != null ? +(t.done_t - t.recognized_t).toFixed(2) : null,
+          p_load_end: t.p_load_end, load_terms: t.load_terms });
         if (k + 1 < PER_BLOCK) artwork(b, k + 1); else blockQuestions(b);
       };
+    }, (other) => {                           // the camera found a different painting
+      bar.querySelector(".grow").innerHTML = `${prompt}<br><small>That is “${other.title}”, not this one.</small>`;
+      api.meta.events.push({ t: now(), e: "wrong_artwork", expected: artId, found: other.id });
     });
   }
 

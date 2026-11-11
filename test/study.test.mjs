@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { selectSegments } from "../src/filter.js";
 import { FixedSession } from "../src/policy-fixed.js";
-import { blockOrder, assignArtworks, susScore, scoreRecall } from "../src/study.js";
+import { blockOrder, assignArtworks, susScore, scoreRecall, practicePrior } from "../src/study.js";
+import { LoadEstimator } from "../src/load.js";
 
 const art = JSON.parse(readFileSync(new URL("../content/artworks.json", import.meta.url), "utf8")).artworks[0];
 const ids = (r) => r.segments.map((s) => s.id).join(",");
@@ -51,4 +52,22 @@ t("recall scoring with alternatives and Turkish input", () => {
   assert.ok(scoreRecall("beş", q[2].keywords));
   assert.ok(scoreRecall("Bursa Yeşil Cami", q[3].keywords));
   assert.ok(!scoreRecall("Topkapı", q[4].keywords)); });
+t("load: no evidence stays near the prior", () => assert.ok(Math.abs(new LoadEstimator().pHigh() - 0.168) < 0.01));
+t("load: slow reading, replays and a step-down raise P(high load)", () => {
+  const L = new LoadEstimator(); const base = L.pHigh();
+  L.segmentRead("one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen", 15);
+  L.replay(); L.stepDown("detailed_text", "brief_text");
+  assert.ok(L.pHigh() > 0.6 && L.pHigh() > base, `got ${L.pHigh()}`); });
+t("load: fast reading (skimming) is not load", () => { const L = new LoadEstimator(); L.segmentRead("a b c d e f g h i j", 1); assert.ok(L.pHigh() < 0.2); });
+t("load: evidence decays at a new artwork", () => { const L = new LoadEstimator(); L.replay(); L.replay(); const p1 = L.pHigh(); L.newArtwork(); assert.ok(L.pHigh() < p1); });
+t("load: walking and noise while listening add load", () => { const L = new LoadEstimator(); L.context({ pMoving: 1, pNoisy: 1, audio: true }); assert.ok(L.pHigh() > 0.4); });
+t("practice prior: finishing detailed audio and abandoning text -> detail and audio", () => {
+  const p = practicePrior([{ format: "detailed_audio", ratio: 1.0, completed: true }, { format: "brief_text", ratio: 0.2, completed: false }]);
+  assert.ok(p.a_d > p.b_d && p.a_a > p.b_a, JSON.stringify(p)); });
+t("practice prior: abandoning detailed and reading brief text fully -> brief and text", () => {
+  const p = practicePrior([{ format: "detailed_audio", ratio: 0.2, completed: false }, { format: "brief_text", ratio: 1.2, completed: true }]);
+  assert.ok(p.b_d > p.a_d && p.b_a > p.a_a, JSON.stringify(p)); });
+t("practice prior: capped", () => {
+  const many = Array.from({ length: 20 }, () => ({ format: "detailed_audio", ratio: 1, completed: true }));
+  const p = practicePrior(many); assert.ok(p.a_d <= 2 && p.a_a <= 2); });
 console.log(`\n${n} unit tests pass.`);

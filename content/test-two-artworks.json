@@ -1,0 +1,190 @@
+{
+  "_note": "TEST CONTENT: two targets to check multi-artwork tracking and the study flow. Not for participants.",
+  "lang": "en-US",
+  "targets_mind": "targets/test-two.mind",
+  "artworks": [
+    {
+      "id": "A1",
+      "target": "targets/artwork.jpg",
+      "fallback_target": "targets/placeholder.jpg",
+      "title": "The Tortoise Trainer",
+      "artist": "Osman Hamdi Bey",
+      "year": "1906",
+      "image_credit": "Public domain; Wikimedia Commons, 'Osman Hamdi Bey - The Tortoise Trainer - Google Art Project.jpg'",
+      "status": "checked against secondary sources (11 Nov 2026)",
+      "core": [
+        {
+          "id": "c1",
+          "text": "The Tortoise Trainer is an oil painting from 1906 by Osman Hamdi Bey, an Ottoman painter and archaeologist.",
+          "source": "Wikipedia 'The Tortoise Trainer'; Pera Museum collection record"
+        },
+        {
+          "id": "c2",
+          "text": "An elderly man in a long red robe and a turban holds a ney flute, with a nakkare drum on his back, and tries to train five tortoises.",
+          "source": "Aslan 2014, p. 118 (via Wikipedia); Pera Museum description"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The scene is set in a worn upper room of the Green Mosque in Bursa. The inscription above the window reads: the healing of the hearts is meeting with the beloved.",
+          "source": "Aslan 2014, p. 119; Eldem 2012, p. 380 (via Wikipedia)",
+          "tag": "setting",
+          "priority": 2
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The painting is usually read as satire on the slow and ineffective attempts to reform the Ottoman Empire.",
+          "source": "Wikipedia lead (uncited there); Pera Museum context text. Verify before the study.",
+          "tag": "interpretation",
+          "priority": 1
+        },
+        {
+          "id": "d3",
+          "optional": true,
+          "text": "This 1906 version hangs in the Pera Museum in Istanbul. Osman Hamdi Bey painted a second version in 1907.",
+          "source": "Pera Museum / Google Arts & Culture; Wikipedia 'Versions'",
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c1",
+          "type": "core",
+          "q": "Who painted The Tortoise Trainer, and in which year?",
+          "a": "Osman Hamdi Bey, 1906",
+          "keywords": [
+            [
+              "osman hamdi"
+            ],
+            [
+              "1906"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c2",
+          "type": "core",
+          "q": "Which instrument does the man hold in his hands?",
+          "a": "a ney (flute)",
+          "keywords": [
+            [
+              "ney",
+              "flute",
+              "flüt"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "c2",
+          "type": "core",
+          "q": "How many tortoises is the man training?",
+          "a": "five",
+          "keywords": [
+            [
+              "five",
+              "5",
+              "beş"
+            ]
+          ]
+        },
+        {
+          "id": "q4",
+          "covers": "d1",
+          "type": "optional",
+          "q": "In which building is the scene set?",
+          "a": "the Green Mosque in Bursa",
+          "keywords": [
+            [
+              "green mosque",
+              "yeşil cami",
+              "yesil cami"
+            ]
+          ]
+        },
+        {
+          "id": "q5",
+          "covers": "d3",
+          "type": "optional",
+          "q": "In which museum is the 1906 version today?",
+          "a": "the Pera Museum, Istanbul",
+          "keywords": [
+            [
+              "pera"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": [
+        {
+          "tag": "setting",
+          "label": "I already know where the scene is set"
+        },
+        {
+          "tag": "interpretation",
+          "label": "I already know how the painting is usually interpreted"
+        },
+        {
+          "tag": "collection",
+          "label": "I already know which museum holds it"
+        }
+      ]
+    },
+    {
+      "id": "T2",
+      "target": "targets/placeholder.jpg",
+      "title": "Test Target",
+      "artist": "generated",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "This is the generated test target used to check multi-artwork tracking."
+        },
+        {
+          "id": "c2",
+          "text": "It has colourful shapes and a white label in the middle."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "It was generated with a fixed random seed.",
+          "tag": "origin",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "It is not a real artwork.",
+          "tag": "status",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "t1",
+          "covers": "c2",
+          "type": "core",
+          "q": "What is in the middle of the test target?",
+          "a": "a white label",
+          "keywords": [
+            [
+              "label",
+              "white"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    }
+  ]
+}

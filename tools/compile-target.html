@@ -15,15 +15,18 @@
   <a id="dl" hidden>download .mind</a>
   <script type="module">
     import { Compiler } from "mindar-image";
-    const name = new URLSearchParams(location.search).get("img") || "placeholder.jpg";
-    const img = new Image();
-    img.src = `../targets/${name}`;
-    await img.decode();
+    // ?img=a.jpg            -> targets/a.mind (one artwork)
+    // ?imgs=a.jpg,b.jpg&out=targets.mind -> one file with several targets, in this order
+    //   (the order must match content/artworks.json)
+    const q = new URLSearchParams(location.search);
+    const names = (q.get("imgs") || q.get("img") || "placeholder.jpg").split(",");
+    const imgs = [];
+    for (const n of names) { const im = new Image(); im.src = `../targets/${n}`; await im.decode(); imgs.push(im); }
     const compiler = new Compiler();
-    await compiler.compileImageTargets([img], (p) => (document.querySelector("#status").textContent = `compiling ${name}: ${p.toFixed(0)}%`));
+    await compiler.compileImageTargets(imgs, (p) => (document.querySelector("#status").textContent = `compiling ${names.length} image(s): ${p.toFixed(0)}%`));
     const data = await compiler.exportData();
     const a = document.querySelector("#dl");
-    a.href = URL.createObjectURL(new Blob([data])); a.download = name.replace(/\.\w+$/, ".mind"); a.hidden = false;
+    a.href = URL.createObjectURL(new Blob([data])); a.download = q.get("out") || names[0].replace(/\.\w+$/, ".mind"); a.hidden = false;
     let saved = "";
     if (new URLSearchParams(location.search).has("save")) {   // only works with tools/dev-server.mjs
       const r = await fetch(`../targets/${a.download}`, { method: "PUT", body: data });

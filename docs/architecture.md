@@ -17,6 +17,7 @@ Context-aware multimodal content selection for cultural-heritage AR · team 525B
  │                  posterior expected utility; Monte Carlo P(improvement) gate        │
  │ policy.js        fixed-step utility of the draft proposal (parity with Python)      │
  │ policy-fixed.js  non-adaptive comparator (participant's chosen format)              │
+ │ load.js          behavioural cognitive-load estimate P(high load)                   │
  │ filter.js        information filtering of optional facts (prior knowledge, walking, │
  │                  noisy audio); core facts never filtered                            │
  │ study.js         counterbalancing, artwork rotation, SUS and recall scoring         │
@@ -38,7 +39,7 @@ Context-aware multimodal content selection for cultural-heritage AR · team 525B
 | Contract | Fields |
 |---|---|
 | Observation | timestamp, artwork_id, tracking_valid, noise_or_missing, optional_sensor_features {p_moving, p_high}, quality_flags |
-| User state (Bayesian) | familiarity, accessibility, format_preference, known facts, Beta(a_d, b_d) detail belief, Beta(a_a, b_a) audio belief |
+| User state (Bayesian) | familiarity, accessibility, known facts / known paintings, Beta(a_d, b_d) detail belief, Beta(a_a, b_a) audio belief (prior from practice behaviour), P(high load) |
 | Decision | timestamp, artwork_id, action, keep_or_switch, utility_by_action, reason, confidence, belief, p_noisy, filtered facts, compute_ms, latency_ms, quality_flags |
 | Exposure | timestamp, artwork_id, segment id, format |
 | Study session | consent, participant, schedule, blocks (interaction times, TLX, Paas), SUS per system, recall answers, decision logs, exposure, metrics |
@@ -56,4 +57,4 @@ Context-aware multimodal content selection for cultural-heritage AR · team 525B
 
 - **Policy:** all three policies expose `recognize / boundary / event`; the study uses the Bayesian policy for the adaptive arm and `policy-fixed.js` for the non-adaptive arm without UI changes.
 - **Device:** sensing is behind `noise.js`, `motion.js` and the MindAR anchor; another device needs new sensing modules, not a new policy.
-- **Content:** a new artwork is an image in `targets/`, a compiled `.mind` (`tools/compile-target.html`) and an entry in `content/artworks.json`.
+- **Content:** a new artwork is an image in `targets/` and an entry in `content/artworks.json`; `node tools/compile-targets.mjs --from content/artworks.json` compiles all paintings into one `.mind` file (target order = entry order).

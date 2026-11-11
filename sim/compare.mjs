@@ -12,6 +12,7 @@ import { writeFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { Session, newUserState, defaultConfig } from "../src/policy.js";
 import { BayesSession, bayesConfig } from "../src/policy-bayes.js";
+import { practicePrior } from "../src/study.js";
 
 const NV = +(process.argv.find((a) => /^\d+$/.test(a)) || 2000);
 const ART = 8, BRIEF_SEGS = 2, DET_SEGS = 5, THR = 60;
@@ -34,6 +35,15 @@ function makeVisitor(r) {
   const dens = (v.d0 > 0.5) !== (r() < VISITOR.pStatedWrong) ? "detailed" : "brief";
   const mod = constraint === "no_text" ? "audio" : constraint === "no_audio" ? "text" : (v.aff > 0.5) !== (r() < VISITOR.pStatedWrong) ? "audio" : "text";
   v.stated = `${dens}_${mod}`;
+  // Practice behaviour (no question): the visitor tries each allowed format; finishing a sample
+  // follows the hidden preferences with noise. Same practicePrior() as the app uses.
+  const fmts = ["brief_text", "detailed_text", "brief_audio", "detailed_audio"].filter((f) => allowed(v, f));
+  v.practice = fmts.map((f) => {
+    const det = f.startsWith("detailed"), aud = f.endsWith("audio");
+    const likeD = det ? v.d0 : 1 - v.d0, likeM = v.constraint ? 0.8 : aud ? v.aff : 1 - v.aff;
+    const completed = r() < 0.15 + 0.7 * (det ? likeD : 0.5) * (0.4 + 0.6 * likeM) / 0.5 * 0.5;
+    return { format: f, completed, ratio: completed ? 1 + 0.3 * r() : 0.1 + 0.5 * r() };
+  });
   return v;
 }
 function makeRoom(r) {
@@ -71,6 +81,8 @@ const POLICIES = [
       if (e === "request_more") this.dens = "detailed"; if (e.startsWith("override:")) this.cur = e.split(":")[1]; } },
   sessionPolicy("Fixed-step utility (current)", (v) => new Session(newUserState({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [] }), { config: defaultConfig() })),
   sessionPolicy("Bayesian, neutral prior", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [] }, { config: bayesConfig() })),
+  sessionPolicy("Bayesian, practice behaviour as prior (no question)", (v) => { const pp = practicePrior(v.practice);
+    return new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], a_d: 2 + pp.a_d, b_d: 2 + pp.b_d, a_a: 2 + pp.a_a, b_a: 2 + pp.b_a }, { config: bayesConfig() }); }),
   sessionPolicy("Bayesian, stated choice as prior", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], format_preference: v.stated }, { config: bayesConfig() })),
   sessionPolicy("Bayesian, stated prior, no history (ablation)", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], format_preference: v.stated }, { config: bayesConfig(), useHistory: false })),
 ];
