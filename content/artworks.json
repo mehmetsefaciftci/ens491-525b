@@ -1,5 +1,5 @@
 {
-  "_note": "Study content: 8 paintings planned (A3 Seker Ahmed Pasa 'Woodcutter in the Forest' pending: no public-domain image found). Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Optional segments carry a tag and a priority (1 = kept first when detail is shortened). Recall items: core and optional test retention; 'transfer' items test applying the content (Mayer 2009). Facts checked 11 Nov 2026 against Wikipedia (with the sources it cites) and museum records; descriptions marked 'verify' and all facts must be checked by the content owner before participants see them.",
+  "_note": "Study content: 8 paintings planned (A3 Seker Ahmed Pasa 'Woodcutter in the Forest' pending: no public-domain image found). Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Optional segments carry a tag and a priority (1 = kept first when detail is shortened). Recall items: core and optional test retention; 'transfer' items test applying the content (Mayer 2009). Facts checked 11 Nov 2026 against Wikipedia (with the sources it cites) and museum records; Bellini (A2) and Vanmour (A4) core descriptions were checked against museum records on 11 Nov 2026; anything still marked 'verify' and all facts must be checked by the content owner before participants see them.",
   "lang": "en-US",
   "artworks": [
     {
@@ -172,7 +172,7 @@
       "orientation": "portrait",
       "recognisability": "medium",
       "image_credit": "Public domain; Wikimedia Commons, 'Bellini, Gentile - Portrait of Mehmed II - National Gallery, London.jpg'",
-      "status": "checked against secondary sources (11 Nov 2026); visual description in c2 to verify",
+      "status": "c1, c2, d2, d3 checked against museum records (National Gallery NG3099; V&A loan record) on 11 Nov 2026; d1 against secondary sources",
       "core": [
         {
           "id": "c1",
@@ -181,8 +181,8 @@
         },
         {
           "id": "c2",
-          "text": "The sultan is shown in profile, framed by a stone arch, with an embroidered cloth hanging over the ledge in front of him.",
-          "source": "Visual description; verify against the National Gallery page"
+          "text": "The sultan is shown almost in profile beneath a stone arch, behind a ledge covered with an embroidered, jewelled cloth.",
+          "source": "National Gallery NG3099 (description: arch, embroidered cloth over the marble ledge); Wikipedia 'Portrait of Mehmet II' (near profile)"
         }
       ],
       "detail": [
@@ -266,21 +266,21 @@
       "target": "targets/A4.jpg",
       "title": "Ambassador Cornelis Calkoen at his Audience with Sultan Ahmed III",
       "artist": "Jean-Baptiste Vanmour",
-      "year": "c. 1727",
+      "year": "c. 1727–1730",
       "orientation": "landscape",
       "recognisability": "low",
       "image_credit": "Public domain; Rijksmuseum SK-A-4078 via Wikimedia Commons",
-      "status": "checked against secondary sources (11 Nov 2026); visual description in c2 to verify",
+      "status": "c1, c2 checked against the Rijksmuseum record on 11 Nov 2026; d1–d3 against secondary sources (d3 partly unverified)",
       "core": [
         {
           "id": "c1",
           "text": "Jean-Baptiste Vanmour painted the Dutch ambassador Cornelis Calkoen being received by Sultan Ahmed III in Istanbul on 14 September 1727.",
-          "source": "Rijksmuseum SK-A-4078 title; Wikipedia 'Jean Baptiste Vanmour'"
+          "source": "Rijksmuseum SK-A-4078 (title: audience of 14 September 1727; painted c. 1727–1730)"
         },
         {
           "id": "c2",
-          "text": "The sultan sits on his throne in the palace while the ambassador and his party stand before him.",
-          "source": "Visual description; verify against the Rijksmuseum page"
+          "text": "The sultan sits on his throne at the left. At the far left the grand vizier addresses the ambassador, who stands at the right with his retinue; after his speech he presents his credentials.",
+          "source": "Rijksmuseum SK-A-4078 object description"
         }
       ],
       "detail": [
@@ -303,7 +303,7 @@
         {
           "id": "d3",
           "text": "Calkoen took the paintings home; they passed through Amsterdam institutions, were reunited in 1903 and hang together in the Rijksmuseum.",
-          "source": "Wikipedia; Rijksmuseum catalogue 1910",
+          "source": "Wikipedia; Rijksmuseum catalogue 1910. 'Reunited in 1903' not yet confirmed in a museum source: verify.",
           "optional": true,
           "tag": "collection",
           "priority": 3

@@ -12,9 +12,10 @@ import { FixedSession } from "./policy-fixed.js";
 import { initStudy } from "./study-ui.js";
 import { LoadEstimator } from "./load.js";
 import { choosePlacement } from "./placement.js";
+import { visitorReason, ParitySchedule, NEUTRAL_QUESTION } from "./explain.js";
 import { Vector3 } from "three";
 
-const BUILD = "spike-2026-11-11c";
+const BUILD = "spike-2026-11-11d";
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 const DEBUG = params.has("debug");
@@ -46,6 +47,14 @@ let populationPrior = null;      // content/population-prior.json (empirical Bay
 let textSecs = 0, textOutSecs = 0, splitSent = false;   // split-attention signal per artwork
 try { fontScale = Math.min(1.6, Math.max(0.8, +localStorage.getItem("ca-fs") || 1)); } catch {}
 let segShownAt = null;
+const parity = new ParitySchedule({ maxQuestions: C.MAX_QUESTIONS });   // question parity between arms
+const adaptivePositions = [];   // artwork positions where the adaptive arm asked a question
+
+// Saved microphone calibration (per device, from a reference sound level meter).
+try {
+  const cal = JSON.parse(localStorage.getItem("ca-noise-cal") || "null");
+  if (cal && Number.isFinite(cal.offset)) { noise.calOffset = cal.offset; noise.calibrated = true; meta.noise_calibration = cal; }
+} catch {}
 
 // ---------------------------------------------------------------- content player
 const player = {
@@ -88,7 +97,7 @@ function makeObs(artworkId) {
   const flags = [];
   let lvl;
   if (forceNoisy) { lvl = 72; flags.push("noise_simulated"); }
-  else { lvl = noise.level(); flags.push(lvl == null ? "noise_missing" : "noise_uncalibrated_estimate"); }
+  else { lvl = noise.level(); flags.push(lvl == null ? "noise_missing" : noise.calibrated ? "noise_calibrated_estimate" : "noise_uncalibrated_estimate"); }
   if (simulatedTracking) flags.push("tracking_simulated");
   const pm = motion.available ? +motion.pMoving().toFixed(3) : 0;
   if (!motion.available) flags.push("motion_missing");
@@ -118,7 +127,7 @@ function recognize() {
   const d = session.recognize(obs);
   if (d) { load.context({ pMoving: artCtx.pMoving, pNoisy: pn, audio: d.action?.endsWith("audio") }); d.load_terms = load.terms(); }
   if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);   // policy only, independent of rendering
-  if (d) { d.quality_flags = obs.quality_flags; d.filtered = selectSegments(art, d.action, artCtx).filtered; player.start(d.action, 0); }
+  if (d) { d.quality_flags = obs.quality_flags; d.filtered = selectSegments(art, d.action, artCtx).filtered; player.start(d.action, 0); explain(null, d); }
   recognizedAt = now();
   if (onRecognized) onRecognized(d);
   stamp(d, tStart); updateHud();
@@ -133,7 +142,7 @@ function segmentEnded() {
   if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);
   if (d) { d.quality_flags = obs.quality_flags; if (d.action !== player.action) d.filtered = selectSegments(art, d.action, artCtx).filtered; }
   const next = player.idx + 1;
-  if (d && d.action !== player.action) player.start(d.action, next);
+  if (d && d.action !== player.action) { const prev = player.action; player.start(d.action, next); explain(prev, d); }
   else { player.idx = next; player.play(); }
   stamp(d, tStart); updateHud();
 }
@@ -162,9 +171,26 @@ function onOverride(action) {
   const tStart = performance.now();
   load.stepDown(player.action, action);
   const d = session.event(`override:${action}`, now());
+  hideWhy();
   player.start(action, player.finished ? 0 : player.idx);
   stamp(d, tStart); updateHud();
 }
+
+// ---------------------------------------------------------------- visitor-facing explanation
+// One plain-language line after each automatic choice, with Undo for automatic switches.
+// Not shown in the non-adaptive arm: there the visitor chose the format on the practice painting.
+let whyUndo = null;
+function explain(prev, d) {
+  if (!session || session instanceof FixedSession) return hideWhy();
+  const r = visitorReason(prev, d, { splitAttention: splitSent, pMoving: artCtx.pMoving });
+  if (!r) return;
+  d.visitor_reason = r.text;
+  whyUndo = r.undo;
+  $("#pWhyText").textContent = r.text;
+  $("#bUndo").classList.toggle("hidden", !r.undo);
+  $("#pWhy").classList.remove("hidden");
+}
+function hideWhy() { whyUndo = null; $("#pWhy")?.classList.add("hidden"); }
 
 // ---------------------------------------------------------------- rendering
 function render() {
@@ -486,8 +512,17 @@ function bindSettings() {
   bind("#thr", "#thrOut", () => C.NOISY_THRESHOLD_DBA, (v) => (C.NOISY_THRESHOLD_DBA = v));
   bind("#cal", "#calOut", () => Math.round(noise.calOffset), (v) => (noise.calOffset = v));
   bind("#bstep", "#bstepOut", () => C.B_STEP, (v) => (C.B_STEP = v), (v) => (+v).toFixed(2));
-  $("#bCal").onclick = () => { const o = noise.calibrateTo(40); $("#cal").value = Math.round(o); $("#calOut").textContent = Math.round(o);
-    meta.events.push({ t: now(), e: "calibrated_quiet_40", offset: o }); updateHud(); };
+  $("#bCal").onclick = () => {
+    const ref = parseFloat(prompt("Reference level from a sound level meter, in dBA (hold the phone next to the meter):", "40"));
+    if (!Number.isFinite(ref)) return;
+    const raw = noise.rawDbfs();
+    if (raw == null) { alert("Start the microphone first."); return; }
+    const o = noise.calibrateTo(ref); noise.calibrated = true;
+    const cal = { offset: +o.toFixed(2), reference_dba: ref, raw_dbfs: +raw.toFixed(2), at: new Date().toISOString(), screen: meta.screen };
+    try { localStorage.setItem("ca-noise-cal", JSON.stringify(cal)); } catch {}
+    meta.noise_calibration = cal; meta.events.push({ t: now(), e: "noise_calibration", ...cal });
+    $("#cal").value = Math.round(o); $("#calOut").textContent = Math.round(o); updateHud();
+  };
   $("#hist").onchange = (e) => { session.useHistory = e.target.checked; meta.events.push({ t: now(), e: "use_history", v: e.target.checked }); updateHud(); };
   $("#forceNoisy").onchange = (e) => { forceNoisy = e.target.checked; meta.events.push({ t: now(), e: "force_noisy", v: forceNoisy }); updateHud(); };
   $("#pin").checked = pinned;
@@ -495,7 +530,9 @@ function bindSettings() {
   $("#side").onchange = (e) => { side = e.target.value; if (!userPinned && autoPinned) { autoPinned = false; setPinned(false); } placePanel(); };
   $("#bMind").onclick = () => { if (!mindData) return; const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([mindData])); a.download = "artwork.mind"; a.click(); };
-  $("#buildInfo").textContent = `Build ${BUILD}. Noise level is an uncalibrated estimate (dBFS + offset), not dBA.`;
+  $("#buildInfo").textContent = `Build ${BUILD}. ` + (noise.calibrated
+    ? `Noise level is calibrated against a reference meter (${meta.noise_calibration?.reference_dba} dBA, ${meta.noise_calibration?.at?.slice(0, 10)}); still no A-weighting.`
+    : "Noise level is an uncalibrated estimate (dBFS + offset), not dBA.");
 }
 
 $("#fam").oninput = (e) => ($("#famOut").textContent = e.target.value);
@@ -506,6 +543,11 @@ $("#startBtn").onclick = (ev) => {
 document.querySelectorAll("[data-act]").forEach((b) => (b.onclick = () => onControl(b.dataset.act)));
 document.querySelectorAll("[data-ov]").forEach((b) => (b.onclick = () => onOverride(b.dataset.ov)));
 $("#bExport").onclick = exportLog;
+$("#bUndo").onclick = () => {
+  const to = whyUndo; if (!to) return;
+  meta.events.push({ t: now(), e: "undo_auto_switch", to });
+  onOverride(to);   // counts as a manual override: never reversed for this artwork
+};
 // Transcript while listening (WCAG) is also weak evidence for preferring text; "Interesting" is
 // explicit evidence of interest in detail (PEACH-style feedback). Text size follows WCAG 1.4.4.
 $("#bCap").onclick = () => { captions = !captions; meta.events.push({ t: now(), e: captions ? "transcript_on" : "transcript_off" });
@@ -521,11 +563,14 @@ $("#bClose").onclick = () => $("#settings").classList.add("hidden");
 $("#hToggle").onclick = (e) => { const body = $("#hBody"); body.classList.toggle("hidden"); e.target.textContent = body.classList.contains("hidden") ? "▸" : "▾"; };
 // One tap question between artworks, only if its value of information exceeds its cost.
 function askQuestion(next) {
+  const pos = session ? (session.qPos = (session.qPos ?? -1) + 1) : 0;   // artwork position in this arm
+  if (session instanceof FixedSession) return askParityQuestion(pos, next);
   if (!(session instanceof BayesSession)) return next();
   const lvl = forceNoisy ? 72 : noise.level();
   const q = session.questionToAsk({ noise: lvl, pMoving: motion.available ? motion.pMoving() : 0, pLoad: load.pHigh() });
   meta.events.push({ t: now(), e: "voi", ask: q.ask, voi: q.voi, reason: q.reason });
   if (!q.ask) return next();
+  adaptivePositions.push(pos); parity.recordAdaptive(adaptivePositions);
   const box = $("#qbox");
   const [text, a, b] = q.ask === "detail" ? ["For the next painting, would you like it shorter or longer?", ["shorter", "Shorter"], ["longer", "Longer"]]
     : ["For the next painting, would you rather listen or read?", ["listen", "Listen"], ["read", "Read"]];
@@ -540,7 +585,24 @@ function askQuestion(next) {
   }));
 }
 
+// Non-adaptive arm: same number of questions at the same positions; the answer is logged only.
+function askParityQuestion(pos, next) {
+  const ask = parity.shouldAsk(pos);
+  meta.events.push({ t: now(), e: "parity_question", position: pos, ask, schedule: parity.positions(), source: parity.source() });
+  if (!ask) return next();
+  const box = $("#qbox");
+  box.innerHTML = `<span class="grow">${NEUTRAL_QUESTION.text}</span>` +
+    NEUTRAL_QUESTION.options.map(([v, l]) => `<button data-a="${v}">${l}</button>`).join("");
+  box.classList.remove("hidden");
+  const t0 = now();
+  box.querySelectorAll("button").forEach((btn) => (btn.onclick = () => {
+    meta.events.push({ t: now(), e: "parity_answer", question: NEUTRAL_QUESTION.id, answer: btn.dataset.a, seconds: +(now() - t0).toFixed(1) });
+    box.classList.add("hidden"); next();
+  }));
+}
+
 $("#bNewArt").onclick = () => {
+  hideWhy();
   if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
   player.stop(); player.action = null; $("#panel").classList.add("hidden");
   askQuestion(() => {
@@ -590,6 +652,7 @@ if (STUDY) {
       if (tracking) recognize();
     },
     finishArtwork() {
+      hideWhy();
       if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
       player.stop(); player.action = null; $("#panel").classList.add("hidden");
       const t = { recognized_t: recognizedAt, done_t: now(), p_load_end: +load.pHigh().toFixed(3), load_terms: load.terms(), load_features: load.features() };

@@ -174,7 +174,7 @@ export function initStudy(api) {
           interaction_s: t.recognized_t != null ? +(t.done_t - t.recognized_t).toFixed(2) : null,
           p_load_end: t.p_load_end, load_terms: t.load_terms, load_features: t.load_features });
         bar.classList.add("hidden");
-        // value-of-information question (adaptive arm only; the fixed arm never asks)
+        // one-tap question: value-of-information in the adaptive arm; a neutral question at the same positions in the fixed arm (parity)
         api.askQuestion(() => { if (k + 1 < PER_BLOCK) artwork(b, k + 1); else blockQuestions(b); });
       };
     }, (other) => {                           // the camera found a different painting

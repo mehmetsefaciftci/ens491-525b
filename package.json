@@ -2,7 +2,7 @@
  "type": "module",
  "private": true,
  "scripts": {
-  "test": "node test/parity.test.mjs && node test/bayes.test.mjs && node test/study.test.mjs && node tools/modularity.mjs",
+  "test": "node test/parity.test.mjs && node test/bayes.test.mjs && node test/study.test.mjs && node test/explain.test.mjs && node tools/modularity.mjs",
   "analyze": "node tools/analyze-study.mjs"
  }
 }
