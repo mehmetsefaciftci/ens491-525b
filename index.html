@@ -32,6 +32,17 @@
       <label><input type="radio" name="acc" value="no_audio" /> text only</label>
       <label><input type="radio" name="acc" value="no_text" /> audio only</label>
     </fieldset>
+    <label>Format you chose on the practice artwork
+      <select id="pref">
+        <option value="">not asked</option>
+        <option value="brief_text">brief text</option><option value="detailed_text">detailed text</option>
+        <option value="brief_audio">brief audio</option><option value="detailed_audio" selected>detailed audio</option>
+      </select></label>
+    <label>Decision policy
+      <select id="policy">
+        <option value="bayes" selected>Bayesian expected utility (revision)</option>
+        <option value="fixed">Fixed-step utility (draft proposal)</option>
+      </select></label>
     <button id="startBtn" class="primary">Start camera &amp; microphone</button>
     <p id="startMsg" class="msg"></p>
     <p class="fine">Nothing leaves this phone. Camera frames are used only for tracking; the microphone is used only for a sound level number. The decision log stays on the device until you export it.</p>
@@ -61,6 +72,7 @@
     <div class="hrow">
       <span id="hTrack" class="pill">scanning…</span>
       <span id="hNoise" class="pill">noise –</span>
+      <span id="hMove" class="pill">motion –</span>
       <span id="hFps" class="pill">– fps</span>
       <span id="hLat" class="pill">decision – ms</span>
       <button id="hToggle" class="pill btn" aria-expanded="true">▾</button>

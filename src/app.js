@@ -3,10 +3,12 @@
 import { MindARThree } from "mindar-image-three";
 import { Compiler } from "mindar-image";
 import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
-import { Session, newUserState, defaultConfig, utilities, ACTIONS } from "./policy.js";
+import { Session, newUserState, utilities, ACTIONS } from "./policy.js";
+import { BayesSession, bayesConfig, evaluate } from "./policy-bayes.js";
 import { NoiseMeter } from "./noise.js";
+import { MotionMeter } from "./motion.js";
 
-const BUILD = "spike-2026-11-11";
+const BUILD = "spike-2026-11-11b";
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 const DEBUG = params.has("debug");
@@ -14,14 +16,16 @@ const t0 = performance.now();
 const now = () => +((performance.now() - t0) / 1000).toFixed(3);   // seconds since page load
 const LABEL = { brief_text: "Brief text", detailed_text: "Detailed text", brief_audio: "Brief audio", detailed_audio: "Detailed audio" };
 
-const C = defaultConfig();
+const C = bayesConfig();       // superset of the fixed-step config; each policy reads its own fields
 const noise = new NoiseMeter({ windowSec: 6, sampleHz: 10, calOffset: 90 });
+const motion = new MotionMeter();
+const DWELL_LONG_S = 20;       // [N] tracked this long while brief -> weak evidence for interest in detail
 const metrics = [];            // one sample per second
 const meta = { build: BUILD, started_at: new Date().toISOString(), user_agent: navigator.userAgent,
   screen: `${screen.width}x${screen.height}@${devicePixelRatio}`, events: [] };
 let session, content, art, targetAspect = 1.33, mindData = null;
 let tracking = false, simulatedTracking = false, forceNoisy = false;
-let visit = 0, pendingRecognition = true, frames = 0, lastLatency = null;
+let visit = 0, pendingRecognition = true, frames = 0, lastLatency = null, trackedSince = null, dwellSent = false;
 let panelObj = null, pinned = params.has("pin"), side = "right";
 
 // ---------------------------------------------------------------- content player
@@ -64,8 +68,10 @@ function makeObs(artworkId) {
   if (forceNoisy) { lvl = 72; flags.push("noise_simulated"); }
   else { lvl = noise.level(); flags.push(lvl == null ? "noise_missing" : "noise_uncalibrated_estimate"); }
   if (simulatedTracking) flags.push("tracking_simulated");
+  const pm = motion.available ? +motion.pMoving().toFixed(3) : 0;
+  if (!motion.available) flags.push("motion_missing");
   return { timestamp: now(), artwork_id: artworkId, tracking_valid: tracking, noise_or_missing: lvl,
-    optional_sensor_features: null, quality_flags: flags };
+    optional_sensor_features: { p_moving: pm }, quality_flags: flags };
 }
 
 // Latency = policy evaluation + DOM update + next painted frame.
@@ -79,7 +85,7 @@ function stamp(decision, tStart) {
 }
 
 function recognize() {
-  pendingRecognition = false; visit++;
+  pendingRecognition = false; visit++; dwellSent = false; trackedSince = tracking ? performance.now() : null;
   const tStart = performance.now();
   const obs = makeObs(`${art.id}-visit${visit}`);
   const d = session.recognize(obs);
@@ -181,7 +187,15 @@ function updateHud() {
   if (!session) return;
   // Live utilities (what the policy would score now); decisions are only taken at boundaries.
   const st = JSON.parse(JSON.stringify(session.frozen));
-  const live = utilities(C, st, lvl, player.action, session.useHistory);
+  const isBayes = session instanceof BayesSession;
+  let live;
+  if (isBayes) {
+    const ev = evaluate(C, st, { noise: lvl, pMoving: motion.available ? motion.pMoving() : 0 }, player.action,
+      { useHistory: session.useHistory, base: session.base, seed: 7 });
+    live = { utils: ev.utils, terms: Object.fromEntries(Object.entries(ev.terms).map(([a, t]) => [a, { I: t.I, B: t.M, D: t.D, S: t.S, R: 0 }])) };
+  } else live = utilities(C, st, lvl, player.action, session.useHistory);
+  const pm = motion.available ? motion.pMoving() : null;
+  $("#hMove").textContent = pm == null ? "motion: n/a" : pm > 0.5 ? "walking" : "still";
   const bars = $("#hBars"); bars.innerHTML = "";
   for (const a of ACTIONS) {
     const v = live.utils[a];
@@ -198,8 +212,13 @@ function updateHud() {
   const last = [...session.log].reverse().find((x) => "keep_or_switch" in x && x.action);
   const tr = player.action && live.terms[player.action];
   const termTxt = tr ? ` · now: I ${tr.I.toFixed(2)} + B ${tr.B.toFixed(2)} − D ${tr.D.toFixed(2)} − switch ${tr.S.toFixed(2)} − unc ${tr.R.toFixed(2)}` : "";
+  const L = session.live;
+  const nextTxt = isBayes
+    ? `Belief for next artwork: P(wants detail) ${(L.a_d / (L.a_d + L.b_d)).toFixed(2)}, P(prefers audio) ${(L.a_a / (L.a_a + L.b_a)).toFixed(2)}`
+    : `B(detailed) next artwork: ${L.b_detailed.toFixed(2)}`;
+  const conf = last?.confidence != null ? ` (confidence ${(+last.confidence).toFixed(2)})` : "";
   $("#hReason").textContent = last
-    ? `Last decision [${last.keep_or_switch}] ${LABEL[last.action]}: ${last.reason}${termTxt}. B(detailed) next artwork: ${session.live.b_detailed.toFixed(2)}.`
+    ? `[${isBayes ? "Bayesian" : "fixed-step"}] Last decision [${last.keep_or_switch}] ${LABEL[last.action]}: ${last.reason}${conf}${termTxt}. ${nextTxt}.`
     : "Point the camera at the artwork.";
 }
 
@@ -245,13 +264,18 @@ function busy(msg) { $("#busy").classList.toggle("hidden", !msg); $("#busyMsg").
 let anchorRef = null;
 
 async function start() {
+  const motionPerm = motion.requestPermission();      // iOS: must start inside the tap, before any await
   const accVal = document.querySelector("input[name=acc]:checked").value;
-  const user = newUserState({ familiarity: +$("#fam").value, accessibility: accVal ? [accVal] : [] });
-  session = new Session(user, { config: C, clock: now });
-  meta.user_state_at_start = user;
+  const pref = $("#pref").value || null, policyName = $("#policy").value;
+  const user = newUserState({ familiarity: +$("#fam").value, accessibility: accVal ? [accVal] : [], format_preference: pref });
+  session = policyName === "bayes"
+    ? new BayesSession({ familiarity: user.familiarity, accessibility: user.accessibility, format_preference: pref }, { config: C, clock: now })
+    : new Session(user, { config: C, clock: now });
+  meta.policy = policyName; meta.user_state_at_start = user;
   if ("speechSynthesis" in window) speechSynthesis.speak(new SpeechSynthesisUtterance(""));  // unlock on iOS
   navigator.wakeLock?.request("screen").catch(() => {});
 
+  if ((await motionPerm) === "granted") motion.start(); else meta.events.push({ t: now(), e: "motion_unavailable" });
   busy("Starting microphone…");
   try { await noise.start(); } catch (e) { meta.events.push({ t: now(), e: "mic_unavailable", detail: String(e) }); }
 
@@ -268,6 +292,7 @@ async function start() {
     return;
   }
 
+  if (!params.has("anchor") && targetAspect > 1.25 && innerHeight > innerWidth) { pinned = true; meta.events.push({ t: now(), e: "panel_pinned_tall_artwork" }); }
   busy("Starting camera…");
   const mindar = new MindARThree({ container: $("#ar"), imageTargetSrc: src, uiLoading: "no", uiScanning: "no",
     filterMinCF: 0.0001, filterBeta: 0.001 });
@@ -276,11 +301,11 @@ async function start() {
   const tCam = performance.now();
   anchorRef.onTargetFound = () => {
     if (!meta.first_detection_ms) meta.first_detection_ms = Math.round(performance.now() - tCam);
-    tracking = true; simulatedTracking = false; meta.events.push({ t: now(), e: "target_found" });
+    tracking = true; simulatedTracking = false; trackedSince = performance.now(); meta.events.push({ t: now(), e: "target_found" });
     if (pendingRecognition) recognize();
     updateHud();
   };
-  anchorRef.onTargetLost = () => { tracking = false; meta.events.push({ t: now(), e: "target_lost" }); updateHud(); };
+  anchorRef.onTargetLost = () => { tracking = false; trackedSince = null; meta.events.push({ t: now(), e: "target_lost" }); updateHud(); };
   await mindar.start();
   meta.camera_start_ms = Math.round(performance.now() - tCam);
   renderer.setAnimationLoop(() => { frames++; renderer.render(scene, camera); cssRenderer.render(cssScene, camera); });
@@ -300,7 +325,10 @@ async function start() {
 
 function tick() {
   const lvl = noise.level();
-  metrics.push({ t: now(), fps: frames, noise_db: lvl == null ? null : +lvl.toFixed(1), tracking, format: player.action });
+  metrics.push({ t: now(), fps: frames, noise_db: lvl == null ? null : +lvl.toFixed(1), tracking, format: player.action,
+    p_moving: motion.available ? +motion.pMoving().toFixed(3) : null });
+  if (session && tracking && trackedSince && !dwellSent && player.action?.startsWith("brief")
+      && (performance.now() - trackedSince) / 1000 > DWELL_LONG_S) { session.event("dwell_long", now()); dwellSent = true; }
   $("#hFps").textContent = `${frames} fps`;
   frames = 0;
   updateHud();
@@ -312,7 +340,7 @@ function exportLog() {
   const lat = session.log.filter((d) => d.latency_ms != null).map((d) => d.latency_ms).sort((a, b) => a - b);
   const q = (arr, p) => (arr.length ? arr[Math.min(arr.length - 1, Math.floor(p * arr.length))] : null);
   const out = {
-    meta: { ...meta, exported_at: new Date().toISOString(), config: C, noise_cal_offset: noise.calOffset,
+    meta: { ...meta, exported_at: new Date().toISOString(), config: C, noise_cal_offset: noise.calOffset, motion_available: motion.available,
       use_history: session.useHistory },
     summary: { decisions: session.log.filter((d) => "keep_or_switch" in d).length,
       fps_while_tracking_median: q(fps, 0.5), fps_while_tracking_p10: q(fps, 0.1),
@@ -358,6 +386,7 @@ $("#bSettings").onclick = () => $("#settings").classList.remove("hidden");
 $("#bClose").onclick = () => $("#settings").classList.add("hidden");
 $("#hToggle").onclick = (e) => { const body = $("#hBody"); body.classList.toggle("hidden"); e.target.textContent = body.classList.contains("hidden") ? "▸" : "▾"; };
 $("#bNewArt").onclick = () => {
+  if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
   player.stop(); player.action = null; $("#panel").classList.add("hidden");
   pendingRecognition = true; meta.events.push({ t: now(), e: "next_artwork" });
   if (tracking) recognize();
@@ -366,7 +395,7 @@ $("#bNewArt").onclick = () => {
 if (DEBUG || params.has("nocam")) {   // desktop testing without the printed artwork; every decision is flagged tracking_simulated
   const b = document.createElement("button"); b.className = "pill btn"; b.textContent = "Simulate target";
   b.onclick = () => { if (!anchorRef) return; if (tracking) { anchorRef.onTargetLost(); return; }
-    tracking = true; simulatedTracking = true; if (pendingRecognition) recognize(); updateHud(); };
+    tracking = true; simulatedTracking = true; trackedSince = performance.now(); if (pendingRecognition) recognize(); updateHud(); };
   $("#hud .hrow:last-child").appendChild(b);
   if (!pinned) pinned = true;
 }

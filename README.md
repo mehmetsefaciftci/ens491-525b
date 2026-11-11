@@ -9,6 +9,8 @@ What is real here:
   the content panel is anchored next to it (CSS3D).
 - **Ambient sound**: the microphone gives a 6 s energy-averaged level, updated every second.
   It is **uncalibrated** (dBFS + offset), not dBA. Set the offset in Settings.
+- **Two policies** (chosen on the start screen): the Bayesian expected-utility revision
+  (`src/policy-bayes.js`, default) and the fixed-step policy of the draft proposal.
 - **Policy**: `src/policy.js` is a line-by-line port of the Python prototype
   (`U = I + B − D − C_opt − c_switch − R_unc`, one automatic change per artwork at a segment
   boundary, manual override wins). `npm test` checks it against the Python output on all
@@ -24,7 +26,9 @@ content, any participant data. Simulated inputs are flagged in the log
 ## Run
 
 ```bash
-npm test                      # JS policy vs. Python reference (20 scenarios)
+npm test                      # JS policy vs. Python (20 scenarios) + Bayesian scenarios S01-S26
+node sim/compare.mjs 2000 --md results/policy-comparison.md   # policy comparison on simulated visits
+node sim/power.mjs --md results/power-analysis.md             # power of the planned study
 python -m http.server 8525    # then open http://localhost:8525/?nocam=1 on a desktop
 ```
 
@@ -58,11 +62,16 @@ resized to 900 px wide.
 ```
 index.html            UI shell, import map
 src/policy.js         expected-utility policy + session timing rules (port of Python)
+src/policy-bayes.js   Bayesian expected-utility policy (proposed revision)
 src/noise.js          microphone level meter
+src/motion.js         walking detection from the accelerometer
 src/app.js            tracking, content player, HUD, logging
 content/artworks.json artwork content (draft)
 targets/              target images (+ compiled .mind)
 test/                 Python reference export + parity test
 tools/                local dev server + target precompiler
+sim/                  policy comparison simulator, power analysis
+results/              scenario results, policy comparison, power analysis
+docs/                 proposal revision draft, ethics application draft, demo screenshot
 vendor/               MindAR 1.2.5 (MIT), three.js r160 (MIT)
 ```
