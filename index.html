@@ -55,8 +55,6 @@
     <div class="pmeta"><span id="pFormat"></span><span id="pSeg"></span></div>
     <h2 id="pTitle"></h2>
     <p id="pText"></p>
-    <!-- One-line reason for an automatic choice (transparency), with Undo for automatic switches. -->
-    <div id="pWhy" class="why hidden" aria-live="polite"><span id="pWhyText"></span><button id="bUndo" class="hidden">Undo</button></div>
     <!-- Audio plays without on-screen text (Mayer: redundancy); the transcript is one tap away (WCAG 1.2). -->
     <div class="ptools">
       <button id="bCap" class="hidden" aria-pressed="false">Transcript</button>
@@ -105,7 +103,7 @@
       <input id="thr" type="range" min="40" max="85" step="1" /></label>
     <label>Calibration offset <output id="calOut"></output>
       <input id="cal" type="range" min="60" max="130" step="1" /></label>
-    <button id="bCal" class="small">Calibrate against a sound level meter…</button>
+    <button id="bCal" class="small">This room is quiet → set to 40 dB</button>
     <label>Behaviour step |B| per event <output id="bstepOut"></output>
       <input id="bstep" type="range" min="0" max="0.4" step="0.05" /></label>
     <label><input id="hist" type="checkbox" checked /> Use behaviour history (off = no-history ablation)</label>

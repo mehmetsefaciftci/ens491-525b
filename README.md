@@ -74,7 +74,6 @@ src/filter.js         context-aware information filtering of optional facts
 src/load.js           behavioural cognitive-load estimate
 src/fit.js            load model fitting and leave-one-subject-out evaluation
 src/placement.js      panel placement optimisation
-src/explain.js        visitor-facing reason line for automatic choices; question parity between study arms
 src/calibration-ui.js pilot load calibration screens
 src/policy-fixed.js   non-adaptive comparator for the study
 src/study.js          counterbalancing, SUS and recall scoring
