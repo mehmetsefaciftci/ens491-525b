@@ -41,8 +41,10 @@
     <label>Decision policy
       <select id="policy">
         <option value="bayes" selected>Bayesian expected utility (revision)</option>
-        <option value="fixed">Fixed-step utility (draft proposal)</option>
+        <option value="fixedstep">Fixed-step utility (draft proposal)</option>
+        <option value="fixed">Non-adaptive: keep the chosen format (study comparator)</option>
       </select></label>
+    <fieldset id="knownBox"><legend>Prior knowledge (facts you already know are not repeated)</legend></fieldset>
     <button id="startBtn" class="primary">Start camera &amp; microphone</button>
     <p id="startMsg" class="msg"></p>
     <p class="fine">Nothing leaves this phone. Camera frames are used only for tracking; the microphone is used only for a sound level number. The decision log stays on the device until you export it.</p>
@@ -108,6 +110,10 @@
     </div>
     <p class="fine" id="buildInfo"></p>
   </section>
+
+  <!-- Study mode (?study=1): consent, questionnaires and block flow are rendered here by src/study-ui.js. -->
+  <section id="study" class="sheet hidden" aria-live="polite"></section>
+  <div id="studyBar" class="studybar hidden"></div>
 
   <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyMsg"></p></div>
 

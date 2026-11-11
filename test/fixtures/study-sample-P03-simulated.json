@@ -1,0 +1,1266 @@
+{
+ "kind": "ca-guide-study-session",
+ "build": "spike-2026-11-11c",
+ "study": {
+  "started_at": "2026-11-11T12:44:45.168Z",
+  "blocks": [
+   {
+    "system": "fixed",
+    "room": "noise",
+    "guide": "Guide A",
+    "artworks": [
+     {
+      "label": "A1#7-p1",
+      "first_format": "detailed_text",
+      "recognized_t": 0.34,
+      "done_t": 0.816,
+      "interaction_s": 0.48
+     },
+     {
+      "label": "A1#8-p1",
+      "first_format": "detailed_text",
+      "recognized_t": 0.816,
+      "done_t": 1.644,
+      "interaction_s": 0.83
+     }
+    ],
+    "started_t": 0.254,
+    "tlx_mental_demand": 65,
+    "paas": 6,
+    "ended_t": 1.708
+   },
+   {
+    "system": "fixed",
+    "room": "quiet",
+    "guide": "Guide A",
+    "artworks": [
+     {
+      "label": "A1#1-p2",
+      "first_format": "detailed_text",
+      "recognized_t": 1.709,
+      "done_t": 2.383,
+      "interaction_s": 0.67
+     },
+     {
+      "label": "A1#2-p2",
+      "first_format": "detailed_text",
+      "recognized_t": 2.384,
+      "done_t": 3.424,
+      "interaction_s": 1.04
+     }
+    ],
+    "started_t": 1.708,
+    "tlx_mental_demand": 65,
+    "paas": 6,
+    "ended_t": 3.499
+   },
+   {
+    "system": "adaptive",
+    "room": "noise",
+    "guide": "Guide B",
+    "artworks": [
+     {
+      "label": "A1#3-p3",
+      "first_format": "detailed_text",
+      "recognized_t": 3.504,
+      "done_t": 4.374,
+      "interaction_s": 0.87
+     },
+     {
+      "label": "A1#4-p3",
+      "first_format": "detailed_text",
+      "recognized_t": 4.375,
+      "done_t": 5.616,
+      "interaction_s": 1.24
+     }
+    ],
+    "started_t": 3.502,
+    "tlx_mental_demand": 45,
+    "paas": 4,
+    "ended_t": 5.683
+   },
+   {
+    "system": "adaptive",
+    "room": "quiet",
+    "guide": "Guide B",
+    "artworks": [
+     {
+      "label": "A1#5-p4",
+      "first_format": "detailed_text",
+      "recognized_t": 5.685,
+      "done_t": 6.771,
+      "interaction_s": 1.09
+     },
+     {
+      "label": "A1#6-p4",
+      "first_format": "detailed_text",
+      "recognized_t": 6.772,
+      "done_t": 8.207,
+      "interaction_s": 1.44
+     }
+    ],
+    "started_t": 5.684,
+    "tlx_mental_demand": 45,
+    "paas": 4,
+    "ended_t": 8.274
+   }
+  ],
+  "sus": {
+   "fixed": {
+    "answers": [
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "score": 50,
+    "guide": "Guide A"
+   },
+   "adaptive": {
+    "answers": [
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2
+    ],
+    "score": 75,
+    "guide": "Guide B"
+   }
+  },
+  "recall": [
+   {
+    "id": "q1",
+    "artwork": "A1",
+    "covers": "c1",
+    "type": "core",
+    "answer": "Osman Hamdi Bey in 1906",
+    "correct_auto": true
+   },
+   {
+    "id": "q2",
+    "artwork": "A1",
+    "covers": "c2",
+    "type": "core",
+    "answer": "ney",
+    "correct_auto": true
+   },
+   {
+    "id": "q3",
+    "artwork": "A1",
+    "covers": "c2",
+    "type": "core",
+    "answer": "four",
+    "correct_auto": false
+   },
+   {
+    "id": "q4",
+    "artwork": "A1",
+    "covers": "d1",
+    "type": "optional",
+    "answer": "Yeşil Cami",
+    "correct_auto": true
+   },
+   {
+    "id": "q5",
+    "artwork": "A1",
+    "covers": "d3",
+    "type": "optional",
+    "answer": "",
+    "correct_auto": false
+   }
+  ],
+  "consent": {
+   "given": true,
+   "t": 0.018,
+   "at": "2026-11-11T12:44:45.180Z"
+  },
+  "participant": {
+   "number": 3,
+   "familiarity": 5,
+   "accessibility": [],
+   "known": [
+    "setting"
+   ],
+   "format_preference": "detailed_text"
+  },
+  "schedule": [
+   {
+    "system": "fixed",
+    "room": "noise",
+    "guide": "Guide A",
+    "artworks": [
+     "A1#7",
+     "A1#8"
+    ]
+   },
+   {
+    "system": "fixed",
+    "room": "quiet",
+    "guide": "Guide A",
+    "artworks": [
+     "A1#1",
+     "A1#2"
+    ]
+   },
+   {
+    "system": "adaptive",
+    "room": "noise",
+    "guide": "Guide B",
+    "artworks": [
+     "A1#3",
+     "A1#4"
+    ]
+   },
+   {
+    "system": "adaptive",
+    "room": "quiet",
+    "guide": "Guide B",
+    "artworks": [
+     "A1#5",
+     "A1#6"
+    ]
+   }
+  ],
+  "practice_tried": [
+   "detailed_text"
+  ]
+ },
+ "decision_logs": {
+  "fixed": [
+   {
+    "timestamp": 0.339,
+    "artwork_id": "A1#7-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.2,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 0.753,
+    "artwork_id": "A1#7-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.1,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 0.753,
+    "artwork_id": "A1#7-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 0.753,
+    "artwork_id": "A1#7-p1",
+    "event": "skip_detail"
+   },
+   {
+    "timestamp": 0.816,
+    "artwork_id": "A1#8-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.1,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 1.58,
+    "artwork_id": "A1#8-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 1.58,
+    "artwork_id": "A1#8-p1",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 1.58,
+    "artwork_id": "A1#8-p1",
+    "event": "skip_detail"
+   },
+   {
+    "timestamp": 1.708,
+    "artwork_id": "A1#1-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 2.317,
+    "artwork_id": "A1#1-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.1,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 2.318,
+    "artwork_id": "A1#1-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 2.318,
+    "artwork_id": "A1#1-p2",
+    "event": "skip_detail"
+   },
+   {
+    "timestamp": 2.383,
+    "artwork_id": "A1#2-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 3.359,
+    "artwork_id": "A1#2-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 3.359,
+    "artwork_id": "A1#2-p2",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {},
+    "reason": "fixed condition: no adaptation",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 3.359,
+    "artwork_id": "A1#2-p2",
+    "event": "skip_detail"
+   }
+  ],
+  "adaptive": [
+   {
+    "timestamp": 3.502,
+    "artwork_id": "A1#3-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.4,
+     "detailed_text": 0.6467,
+     "brief_audio": 0.2287,
+     "detailed_audio": 0.456
+    },
+    "reason": "highest expected utility (0.647); best in 62% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.6667,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.6175,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 1.8,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 4.305,
+    "artwork_id": "A1#3-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.6467,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.406
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.6667,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.68,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 1.2,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 4.306,
+    "artwork_id": "A1#3-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.6467,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.406
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.6667,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.7275,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.6,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 4.307,
+    "artwork_id": "A1#3-p3",
+    "event": "skip_detail",
+    "belief": {
+     "a_d": 4,
+     "b_d": 3,
+     "a_a": 2,
+     "b_a": 4
+    }
+   },
+   {
+    "timestamp": 4.374,
+    "artwork_id": "A1#4-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.4,
+     "detailed_text": 0.5474,
+     "brief_audio": 0.2287,
+     "detailed_audio": 0.3567
+    },
+    "reason": "highest expected utility (0.547); best in 52% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5839,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.5175,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.9,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 5.553,
+    "artwork_id": "A1#4-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.5474,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.3067
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5839,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.655,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.7,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 5.554,
+    "artwork_id": "A1#4-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.5474,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.3067
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5839,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.6425,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.5,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 5.554,
+    "artwork_id": "A1#4-p3",
+    "event": "skip_detail",
+    "belief": {
+     "a_d": 4,
+     "b_d": 3.85,
+     "a_a": 2,
+     "b_a": 4
+    }
+   },
+   {
+    "timestamp": 5.684,
+    "artwork_id": "A1#5-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.4,
+     "detailed_text": 0.4805,
+     "brief_audio": 0.2287,
+     "detailed_audio": 0.2899
+    },
+    "reason": "highest expected utility (0.481); best in 46% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5282,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.4575,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 1,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 6.701,
+    "artwork_id": "A1#5-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.4805,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.2399
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5282,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.5825,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.5,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 6.702,
+    "artwork_id": "A1#5-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.4805,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.2399
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5282,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.575,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.5,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 6.703,
+    "artwork_id": "A1#5-p4",
+    "event": "skip_detail",
+    "belief": {
+     "a_d": 4,
+     "b_d": 4.5725,
+     "a_a": 2,
+     "b_a": 4
+    }
+   },
+   {
+    "timestamp": 6.772,
+    "artwork_id": "A1#6-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.4,
+     "detailed_text": 0.433,
+     "brief_audio": 0.2287,
+     "detailed_audio": 0.2423
+    },
+    "reason": "highest expected utility (0.433); best in 44% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4886,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.4375,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.7,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": [
+     {
+      "id": "d1",
+      "reason": "visitor already knows: setting"
+     }
+    ]
+   },
+   {
+    "timestamp": 8.141,
+    "artwork_id": "A1#6-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.433,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.1923
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4886,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.525,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 0.8,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 8.142,
+    "artwork_id": "A1#6-p4",
+    "action": "detailed_text",
+    "keep_or_switch": "keep",
+    "utility_by_action": {
+     "brief_text": 0.35,
+     "detailed_text": 0.433,
+     "brief_audio": 0.1787,
+     "detailed_audio": 0.1923
+    },
+    "reason": "current action still has highest expected utility",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4886,
+     "audio_mean": 0.3333
+    },
+    "p_noisy": 0.3,
+    "confidence": 0.4975,
+    "modality": "text",
+    "density": "detailed",
+    "compute_ms": 1.3,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ]
+   },
+   {
+    "timestamp": 8.143,
+    "artwork_id": "A1#6-p4",
+    "event": "skip_detail",
+    "belief": {
+     "a_d": 4,
+     "b_d": 5.1866,
+     "a_a": 2,
+     "b_a": 4
+    }
+   }
+  ]
+ },
+ "exposure": [
+  {
+   "t": 0.34,
+   "artwork_id": "A1#7-p1",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 0.753,
+   "artwork_id": "A1#7-p1",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 0.753,
+   "artwork_id": "A1#7-p1",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 0.816,
+   "artwork_id": "A1#8-p1",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 1.58,
+   "artwork_id": "A1#8-p1",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 1.58,
+   "artwork_id": "A1#8-p1",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 1.709,
+   "artwork_id": "A1#1-p2",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 2.318,
+   "artwork_id": "A1#1-p2",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 2.318,
+   "artwork_id": "A1#1-p2",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 2.384,
+   "artwork_id": "A1#2-p2",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 3.359,
+   "artwork_id": "A1#2-p2",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 3.359,
+   "artwork_id": "A1#2-p2",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 3.504,
+   "artwork_id": "A1#3-p3",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 4.306,
+   "artwork_id": "A1#3-p3",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 4.307,
+   "artwork_id": "A1#3-p3",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 4.375,
+   "artwork_id": "A1#4-p3",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 5.554,
+   "artwork_id": "A1#4-p3",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 5.554,
+   "artwork_id": "A1#4-p3",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 5.685,
+   "artwork_id": "A1#5-p4",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 6.702,
+   "artwork_id": "A1#5-p4",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 6.702,
+   "artwork_id": "A1#5-p4",
+   "seg": "d2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 6.772,
+   "artwork_id": "A1#6-p4",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 8.142,
+   "artwork_id": "A1#6-p4",
+   "seg": "c2",
+   "format": "detailed_text"
+  },
+  {
+   "t": 8.143,
+   "artwork_id": "A1#6-p4",
+   "seg": "d2",
+   "format": "detailed_text"
+  }
+ ],
+ "events": [
+  {
+   "t": 0.02,
+   "e": "motion_unavailable"
+  },
+  {
+   "t": 0.239,
+   "e": "mic_unavailable",
+   "detail": "NotAllowedError: Permission denied"
+  },
+  {
+   "t": 0.254,
+   "e": "nocam_mode"
+  },
+  {
+   "t": 0.254,
+   "e": "block_start",
+   "block": 1,
+   "system": "fixed",
+   "room": "noise"
+  },
+  {
+   "t": 1.708,
+   "e": "block_start",
+   "block": 2,
+   "system": "fixed",
+   "room": "quiet"
+  },
+  {
+   "t": 3.502,
+   "e": "block_start",
+   "block": 3,
+   "system": "adaptive",
+   "room": "noise"
+  },
+  {
+   "t": 5.684,
+   "e": "block_start",
+   "block": 4,
+   "system": "adaptive",
+   "room": "quiet"
+  }
+ ],
+ "metrics": [
+  {
+   "t": 1.261,
+   "fps": 1,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 2.258,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 3.257,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 4.257,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 5.261,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 6.257,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 7.267,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": "detailed_text",
+   "p_moving": null
+  },
+  {
+   "t": 8.257,
+   "fps": 0,
+   "noise_db": null,
+   "tracking": true,
+   "format": null,
+   "p_moving": null
+  }
+ ],
+ "device": {
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Claude/5.1231.0 Chrome/156.0.8078.75 Safari/537.36 MSIX",
+  "screen": "0x0@1"
+ },
+ "finished_at": "2026-11-11T12:44:53.438Z"
+}

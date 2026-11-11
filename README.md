@@ -29,13 +29,14 @@ content, any participant data. Simulated inputs are flagged in the log
 npm test                      # JS policy vs. Python (20 scenarios) + Bayesian scenarios S01-S26
 node sim/compare.mjs 2000 --md results/policy-comparison.md   # policy comparison on simulated visits
 node sim/power.mjs --md results/power-analysis.md             # power of the planned study
+node tools/analyze-study.mjs <study files or folder> --md report.md --csv long.csv
 python -m http.server 8525    # then open http://localhost:8525/?nocam=1 on a desktop
 ```
 
 On a phone the page must be served over **HTTPS** (camera and microphone). Any static host
 works, e.g. GitHub Pages.
 
-URL options: `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
+URL options: `?study=1` controlled-study mode (consent, blocks, questionnaires, recall, results file) · `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
 `?pin=1` content panel pinned to the screen instead of next to the artwork.
 
 ## Using your own artwork
@@ -65,6 +66,10 @@ src/policy.js         expected-utility policy + session timing rules (port of Py
 src/policy-bayes.js   Bayesian expected-utility policy (proposed revision)
 src/noise.js          microphone level meter
 src/motion.js         walking detection from the accelerometer
+src/filter.js         context-aware information filtering of optional facts
+src/policy-fixed.js   non-adaptive comparator for the study
+src/study.js          counterbalancing, SUS and recall scoring
+src/study-ui.js       study mode screens
 src/app.js            tracking, content player, HUD, logging
 content/artworks.json artwork content (draft)
 targets/              target images (+ compiled .mind)
@@ -72,6 +77,6 @@ test/                 Python reference export + parity test
 tools/                local dev server + target precompiler
 sim/                  policy comparison simulator, power analysis
 results/              scenario results, policy comparison, power analysis
-docs/                 proposal revision draft, ethics application draft, demo screenshot
+docs/                 architecture, requirements traceability, proposal revision and ethics drafts
 vendor/               MindAR 1.2.5 (MIT), three.js r160 (MIT)
 ```

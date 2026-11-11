@@ -14,7 +14,8 @@ createServer(async (req, res) => {
   const path = decodeURIComponent(new URL(req.url, "http://x").pathname);
   const file = normalize(join(root, path.endsWith("/") ? path + "index.html" : path));
   if (!file.startsWith(root)) { res.writeHead(403).end(); return; }
-  if (req.method === "PUT" && /^\/targets\/[\w.-]+\.mind$/.test(path)) {
+  if (req.method === "PUT" && (/^\/targets\/[\w.-]+\.mind$/.test(path) || /^\/test\/fixtures\/[\w.-]+\.json$/.test(path))) {
+    await import("node:fs/promises").then((fs) => fs.mkdir(join(root, path, ".."), { recursive: true }));
     const chunks = []; for await (const c of req) chunks.push(c);
     await writeFile(file, Buffer.concat(chunks));
     console.log(`saved ${path} (${Buffer.concat(chunks).length} bytes)`);

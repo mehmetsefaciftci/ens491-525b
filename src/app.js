@@ -4,14 +4,18 @@ import { MindARThree } from "mindar-image-three";
 import { Compiler } from "mindar-image";
 import { CSS3DObject } from "three/addons/renderers/CSS3DRenderer.js";
 import { Session, newUserState, utilities, ACTIONS } from "./policy.js";
-import { BayesSession, bayesConfig, evaluate } from "./policy-bayes.js";
+import { BayesSession, bayesConfig, evaluate, pNoisy } from "./policy-bayes.js";
 import { NoiseMeter } from "./noise.js";
 import { MotionMeter } from "./motion.js";
+import { selectSegments } from "./filter.js";
+import { FixedSession } from "./policy-fixed.js";
+import { initStudy } from "./study-ui.js";
 
-const BUILD = "spike-2026-11-11b";
+const BUILD = "spike-2026-11-11c";
 const $ = (s) => document.querySelector(s);
 const params = new URLSearchParams(location.search);
 const DEBUG = params.has("debug");
+const STUDY = params.has("study");
 const t0 = performance.now();
 const now = () => +((performance.now() - t0) / 1000).toFixed(3);   // seconds since page load
 const LABEL = { brief_text: "Brief text", detailed_text: "Detailed text", brief_audio: "Brief audio", detailed_audio: "Detailed audio" };
@@ -26,12 +30,16 @@ const meta = { build: BUILD, started_at: new Date().toISOString(), user_agent: n
 let session, content, art, targetAspect = 1.33, mindData = null;
 let tracking = false, simulatedTracking = false, forceNoisy = false;
 let visit = 0, pendingRecognition = true, frames = 0, lastLatency = null, trackedSince = null, dwellSent = false;
-let panelObj = null, pinned = params.has("pin"), side = "right";
+let panelObj = null, pinned = params.has("pin") || STUDY, side = "right";
+let known = [];                 // facts the visitor reported knowing (prior-knowledge checklist)
+let artCtx = { known: [], pMoving: 0, pNoisy: 0 };   // context frozen at recognition, used by the filter
+let artworkLabel = null, recognizedAt = null, onRecognized = null;
+meta.exposure = [];             // which segment was shown, in which format (for exposure-based recall)
 
 // ---------------------------------------------------------------- content player
 const player = {
   action: null, idx: 0, finished: false, token: 0,
-  segs() { return art.core.concat(this.action?.startsWith("detailed") ? art.detail : []); },
+  segs() { return selectSegments(art, this.action, artCtx).segments; },
   isAudio() { return this.action?.endsWith("audio"); },
   stop() { this.token++; if ("speechSynthesis" in window) speechSynthesis.cancel(); },
   start(action, idx = 0) {
@@ -40,6 +48,8 @@ const player = {
   },
   play() {
     render();
+    const sg = this.segs()[this.idx];
+    if (sg && !this.finished) meta.exposure.push({ t: now(), artwork_id: session?.artwork, seg: sg.id, format: this.action });
     if (this.isAudio() && !this.finished) {
       const tok = this.token, seg = this.segs()[this.idx];
       speak(seg.text, () => { if (tok === this.token) segmentEnded(); });
@@ -87,9 +97,14 @@ function stamp(decision, tStart) {
 function recognize() {
   pendingRecognition = false; visit++; dwellSent = false; trackedSince = tracking ? performance.now() : null;
   const tStart = performance.now();
-  const obs = makeObs(`${art.id}-visit${visit}`);
+  const obs = makeObs(artworkLabel || `${art.id}-visit${visit}`);
+  const pn = obs.noise_or_missing == null ? C.P_NOISY_UNKNOWN : pNoisy(C, obs.noise_or_missing);
+  artCtx = { known, pMoving: obs.optional_sensor_features.p_moving, pNoisy: pn };
   const d = session.recognize(obs);
-  if (d) { d.quality_flags = obs.quality_flags; player.start(d.action, 0); }
+  if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);   // policy only, independent of rendering
+  if (d) { d.quality_flags = obs.quality_flags; d.filtered = selectSegments(art, d.action, artCtx).filtered; player.start(d.action, 0); }
+  recognizedAt = now();
+  if (onRecognized) onRecognized(d);
   stamp(d, tStart); updateHud();
 }
 
@@ -99,7 +114,8 @@ function segmentEnded() {
   const tStart = performance.now();
   const obs = makeObs(session.artwork);
   const d = session.boundary(obs);
-  if (d) d.quality_flags = obs.quality_flags;
+  if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);
+  if (d) { d.quality_flags = obs.quality_flags; if (d.action !== player.action) d.filtered = selectSegments(art, d.action, artCtx).filtered; }
   const next = player.idx + 1;
   if (d && d.action !== player.action) player.start(d.action, next);
   else { player.idx = next; player.play(); }
@@ -184,7 +200,7 @@ function updateHud() {
   hT.textContent = tracking ? (simulatedTracking ? "tracking (sim)" : "artwork tracked") : "scanning…";
   hT.className = "pill " + (tracking ? "ok" : "");
   $("#hLat").textContent = lastLatency == null ? "decision – ms" : `decision ${lastLatency.toFixed(0)} ms`;
-  if (!session) return;
+  if (!session || STUDY || session instanceof FixedSession) return;
   // Live utilities (what the policy would score now); decisions are only taken at boundaries.
   const st = JSON.parse(JSON.stringify(session.frozen));
   const isBayes = session instanceof BayesSession;
@@ -263,15 +279,29 @@ async function loadTarget() {
 function busy(msg) { $("#busy").classList.toggle("hidden", !msg); $("#busyMsg").textContent = msg || ""; }
 let anchorRef = null;
 
+function makeSession(policyName, { familiarity = 4, accessibility = [], format_preference = null } = {}) {
+  const user = { familiarity, accessibility, format_preference };
+  if (policyName === "bayes") return new BayesSession(user, { config: C, clock: now });
+  if (policyName === "fixed") return new FixedSession(user, { clock: now });
+  return new Session(newUserState(user), { config: C, clock: now });   // "fixedstep": draft-proposal policy
+}
+
 async function start() {
-  const motionPerm = motion.requestPermission();      // iOS: must start inside the tap, before any await
   const accVal = document.querySelector("input[name=acc]:checked").value;
   const pref = $("#pref").value || null, policyName = $("#policy").value;
-  const user = newUserState({ familiarity: +$("#fam").value, accessibility: accVal ? [accVal] : [], format_preference: pref });
-  session = policyName === "bayes"
-    ? new BayesSession({ familiarity: user.familiarity, accessibility: user.accessibility, format_preference: pref }, { config: C, clock: now })
-    : new Session(user, { config: C, clock: now });
-  meta.policy = policyName; meta.user_state_at_start = user;
+  known = [...document.querySelectorAll("#knownBox input:checked")].map((x) => x.value);
+  const user = { familiarity: +$("#fam").value, accessibility: accVal ? [accVal] : [], format_preference: pref };
+  session = makeSession(policyName, user);
+  meta.policy = policyName; meta.user_state_at_start = { ...user, known };
+  await initSensors();
+  $("#start").classList.add("hidden");
+  $("#hud").classList.remove("hidden");
+  updateHud();
+}
+
+// Microphone, motion, target and camera. Call from a tap handler: iOS needs the first lines there.
+async function initSensors() {
+  const motionPerm = motion.requestPermission();      // iOS: must start inside the tap, before any await
   if ("speechSynthesis" in window) speechSynthesis.speak(new SpeechSynthesisUtterance(""));  // unlock on iOS
   navigator.wakeLock?.request("screen").catch(() => {});
 
@@ -286,9 +316,8 @@ async function start() {
     meta.events.push({ t: now(), e: "nocam_mode" });
     anchorRef = { onTargetLost: () => { tracking = false; updateHud(); } };
     const loop = () => { frames++; requestAnimationFrame(loop); }; loop();
-    setPinned(true);
-    $("#start").classList.add("hidden"); $("#hud").classList.remove("hidden"); busy(null);
-    setInterval(tick, 1000); updateHud();
+    setPinned(true); busy(null);
+    setInterval(tick, 1000);
     return;
   }
 
@@ -315,12 +344,8 @@ async function start() {
   anchorRef.group.add(panelObj);
   $("#panel").classList.add("hidden");
   if (pinned) setPinned(true);
-
-  $("#start").classList.add("hidden");
-  $("#hud").classList.remove("hidden");
   busy(null);
   setInterval(tick, 1000);
-  updateHud();
 }
 
 function tick() {
@@ -404,3 +429,37 @@ const resp = await fetch("content/artworks.json");
 content = await resp.json();
 art = content.artworks[0];
 bindSettings();
+for (const k of art.prior_knowledge || []) {
+  const l = document.createElement("label");
+  l.innerHTML = `<input type="checkbox" value="${k.tag}" /> ${k.label}`;
+  $("#knownBox").appendChild(l);
+}
+
+// ---------------------------------------------------------------- study mode (?study=1)
+if (STUDY) {
+  $("#start").classList.add("hidden");
+  initStudy({
+    art, content, meta, now, $, busy, metrics,
+    initSensors,
+    beginSystem(system, user) {              // one session per system; its history carries across its two blocks
+      known = user.known || [];
+      session = makeSession(system === "adaptive" ? "bayes" : "fixed", user);
+      return session;
+    },
+    setSession(s) { session = s; },
+    expectArtwork(label, cb) {               // wait for the camera to recognise the painting
+      artworkLabel = label; onRecognized = cb; pendingRecognition = true;
+      if (tracking) recognize();
+    },
+    finishArtwork() {
+      if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
+      player.stop(); player.action = null; $("#panel").classList.add("hidden");
+      const t = { recognized_t: recognizedAt, done_t: now() };
+      artworkLabel = null; onRecognized = null; pendingRecognition = false; recognizedAt = null;
+      return t;
+    },
+    simulateTarget: params.has("nocam")
+      ? () => { tracking = true; simulatedTracking = true; trackedSince = performance.now(); if (pendingRecognition) recognize(); }
+      : null,
+  });
+}
