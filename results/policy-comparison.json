@@ -1,0 +1,104 @@
+{
+ "visitors": 2000,
+ "assumptions": {
+  "fatigueShare": 0.4,
+  "fatigueStep": 0.08,
+  "audioOnly": 0.1,
+  "textOnly": 0.1,
+  "room": {
+   "quiet": 0.5,
+   "borderline": 0.15,
+   "noisy": 0.35
+  },
+  "walking": 0.2,
+  "pSkipUnwanted": 0.8,
+  "pLeaveEarly": 0.5,
+  "pRequestMore": 0.4,
+  "pReplay": 0.2,
+  "pDwell": 0.5,
+  "pOverrideNoisyAudio": 0.6,
+  "pOverrideStrongPref": 0.3,
+  "micSd": 3,
+  "pStatedWrong": 0.15
+ },
+ "results": [
+  {
+   "policy": "Fixed (visitor's stated choice)",
+   "suitable": 0.5294471165659269,
+   "suitable_ci": 0.011275349292709883,
+   "suitable_late": 0.5106086309523828,
+   "suitable_late_ci": 0.014321712427733477,
+   "effort": 2.785,
+   "switches": 0,
+   "suitable_audio_only": 0.6793201208334051,
+   "suitable_fatigue": 0.5274419051094189,
+   "us_median": 0.10000000000331966,
+   "us_p99": 1.2999999999934175
+  },
+  {
+   "policy": "Rule-based (starts from stated choice)",
+   "suitable": 0.553071137051551,
+   "suitable_ci": 0.010502142826955716,
+   "suitable_late": 0.550774130648763,
+   "suitable_late_ci": 0.013396901678209849,
+   "effort": 2.037,
+   "switches": 0.4285,
+   "suitable_audio_only": 0.673447777244981,
+   "suitable_fatigue": 0.5758406458036617,
+   "us_median": 0.2000000000066393,
+   "us_p99": 1.0000000000047748
+  },
+  {
+   "policy": "Fixed-step utility (current)",
+   "suitable": 0.42049271201558686,
+   "suitable_ci": 0.010069460423807403,
+   "suitable_late": 0.4386363058510114,
+   "suitable_late_ci": 0.012925394559445275,
+   "effort": 3.1585,
+   "switches": 0.4825,
+   "suitable_audio_only": 0.551857940037742,
+   "suitable_fatigue": 0.3860838351510994,
+   "us_median": 4.400000000003956,
+   "us_p99": 21.700000000009823
+  },
+  {
+   "policy": "Bayesian, neutral prior",
+   "suitable": 0.4357647251122685,
+   "suitable_ci": 0.010312645450588102,
+   "suitable_late": 0.42888928612237376,
+   "suitable_late_ci": 0.01277513505356983,
+   "effort": 3.0835,
+   "switches": 0.0105,
+   "suitable_audio_only": 0.5558673459411515,
+   "suitable_fatigue": 0.39175611719313336,
+   "us_median": 413.70000000097207,
+   "us_p99": 1205.1000000001295
+  },
+  {
+   "policy": "Bayesian, stated choice as prior",
+   "suitable": 0.5539204602003281,
+   "suitable_ci": 0.010834982621415386,
+   "suitable_late": 0.5289333455759935,
+   "suitable_late_ci": 0.013763057487075165,
+   "effort": 2.5565,
+   "switches": 0.0145,
+   "suitable_audio_only": 0.650609229302934,
+   "suitable_fatigue": 0.5240094244003902,
+   "us_median": 418.20000000006985,
+   "us_p99": 1187.5
+  },
+  {
+   "policy": "Bayesian, stated prior, no history (ablation)",
+   "suitable": 0.5504468143147417,
+   "suitable_ci": 0.011211261311814946,
+   "suitable_late": 0.5277547939397217,
+   "suitable_late_ci": 0.014219791869357599,
+   "effort": 2.554,
+   "switches": 0.0085,
+   "suitable_audio_only": 0.6620186955161899,
+   "suitable_fatigue": 0.5454171355831982,
+   "us_median": 413.5000000023865,
+   "us_p99": 1151.799999999639
+  }
+ ]
+}
