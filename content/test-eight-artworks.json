@@ -5,7 +5,7 @@
   "artworks": [
     {
       "id": "E1",
-      "target": "targets/artwork.jpg",
+      "target": "targets/A1.jpg",
       "title": "Test painting Alpha",
       "artist": "test",
       "year": "2026",
@@ -137,7 +137,7 @@
     },
     {
       "id": "E3",
-      "target": "targets/artwork.jpg",
+      "target": "targets/A1.jpg",
       "title": "Test painting Charlie",
       "artist": "test",
       "year": "2026",
@@ -269,7 +269,7 @@
     },
     {
       "id": "E5",
-      "target": "targets/artwork.jpg",
+      "target": "targets/A1.jpg",
       "title": "Test painting Echo",
       "artist": "test",
       "year": "2026",
@@ -401,7 +401,7 @@
     },
     {
       "id": "E7",
-      "target": "targets/artwork.jpg",
+      "target": "targets/A1.jpg",
       "title": "Test painting Golf",
       "artist": "test",
       "year": "2026",

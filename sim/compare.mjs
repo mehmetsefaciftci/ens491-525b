@@ -7,7 +7,9 @@
 // "Suitable" is judged against the hidden truth, which no policy sees.
 //
 // This is a design analysis under stated assumptions, not evidence of user benefit; the user
-// study tests that. Usage: node sim/compare.mjs [visitors=2000] [--md out.md] [--json out.json]
+// study tests that. Usage: node sim/compare.mjs [visitors=2000] [--skew] [--md out.md] [--json out.json]
+// --skew: a population with shared tendencies (most visitors prefer brief content and audio),
+//         used to test the population (empirical Bayes) prior.
 import { writeFileSync } from "node:fs";
 import { performance } from "node:perf_hooks";
 import { Session, newUserState, defaultConfig } from "../src/policy.js";
@@ -15,12 +17,15 @@ import { BayesSession, bayesConfig } from "../src/policy-bayes.js";
 import { practicePrior } from "../src/study.js";
 
 const NV = +(process.argv.find((a) => /^\d+$/.test(a)) || 2000);
+const SKEW = process.argv.includes("--skew");
 const ART = 8, BRIEF_SEGS = 2, DET_SEGS = 5, THR = 60;
 const VISITOR = {             // simulator assumptions (all [N], stated in the report)
   fatigueShare: 0.4, fatigueStep: 0.08, audioOnly: 0.1, textOnly: 0.1,
   room: { quiet: 0.5, borderline: 0.15, noisy: 0.35 }, walking: 0.2,
   pSkipUnwanted: 0.8, pLeaveEarly: 0.5, pRequestMore: 0.4, pReplay: 0.2, pDwell: 0.5,
   pOverrideNoisyAudio: 0.6, pOverrideStrongPref: 0.3, micSd: 3, pStatedWrong: 0.15,
+  pAnswerWrong: 0.15,          // a direct answer to the one-tap question is wrong this often
+  skew: SKEW ? { detailPow: 1.8, audioPow: 0.6 } : null,   // d0 = 0.1 + 0.8 u^1.8 (mean ~0.39); aff = u^0.6 (mean ~0.63)
 };
 
 function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
@@ -30,7 +35,8 @@ const gauss = (r) => Math.sqrt(-2 * Math.log(r() + 1e-12)) * Math.cos(2 * Math.P
 function makeVisitor(r) {
   const u = r();
   const constraint = u < VISITOR.audioOnly ? "no_text" : u < VISITOR.audioOnly + VISITOR.textOnly ? "no_audio" : null;
-  const v = { d0: 0.1 + 0.8 * r(), fatigue: r() < VISITOR.fatigueShare, aff: r(), constraint, fam: 1 + Math.floor(r() * 7) };
+  const sk = VISITOR.skew;
+  const v = { d0: 0.1 + 0.8 * (sk ? r() ** sk.detailPow : r()), fatigue: r() < VISITOR.fatigueShare, aff: sk ? r() ** sk.audioPow : r(), constraint, fam: 1 + Math.floor(r() * 7) };
   // Format the visitor states on the practice artwork; each half is wrong with pStatedWrong.
   const dens = (v.d0 > 0.5) !== (r() < VISITOR.pStatedWrong) ? "detailed" : "brief";
   const mod = constraint === "no_text" ? "audio" : constraint === "no_audio" ? "text" : (v.aff > 0.5) !== (r() < VISITOR.pStatedWrong) ? "audio" : "text";
@@ -64,11 +70,31 @@ function suitable(f, v, wants, room) {
 const allowed = (v, f) => !(v.constraint === "no_text" && f.endsWith("text")) && !(v.constraint === "no_audio" && f.endsWith("audio"));
 
 // ---------------------------------------------------------------- policies with a common interface
-function sessionPolicy(name, make) {
+function sessionPolicy(name, make, { ask = false } = {}) {
   return { name, start(v) { this.s = make(v); },
     recognize(obs) { return this.s.recognize(obs)?.action; }, boundary(obs) { return this.s.boundary(obs)?.action; },
-    event(e) { this.s.event(e, 0); } };
+    event(e) { this.s.event(e, 0); },
+    // value-of-information question between artworks; the visitor answers from the hidden truth
+    afterArtwork: ask ? function (v, dk, r) {
+      const q = this.s.questionToAsk({ noise: 45 });
+      if (!q.ask) return 0;
+      const truth = q.ask === "detail" ? dk > 0.5 : v.aff > 0.5;
+      const said = r() < VISITOR.pAnswerWrong ? !truth : truth;
+      this.s.event(q.ask === "detail" ? (said ? "answer:longer" : "answer:shorter") : (said ? "answer:listen" : "answer:read"), 0);
+      return 1;
+    } : null };
 }
+// Empirical Bayes: the population prior is estimated from a separate set of 24 "pilot" visitors
+// (their stated choices), shrunk to 4 pseudo-counts; in the app tools/population-prior.mjs does
+// the same from real pilot files.
+const POP = (() => {
+  const r = rng(424242); let det = 0, aud = 0, nm = 0;
+  for (let i = 0; i < 24; i++) { const v = makeVisitor(r); if (v.stated.startsWith("detailed")) det++; if (!v.constraint) { nm++; if (v.stated.endsWith("audio")) aud++; } }
+  const pd = (det + 1) / 26, pa = (aud + 1) / (nm + 2);
+  return { a_d: 4 * pd, b_d: 4 * (1 - pd), a_a: 4 * pa, b_a: 4 * (1 - pa) };
+})();
+const practiceOn = (base, v) => { const pp = practicePrior(v.practice); return { a_d: base.a_d + pp.a_d, b_d: base.b_d + pp.b_d, a_a: base.a_a + pp.a_a, b_a: base.b_a + pp.b_a }; };
+const NEUTRAL = { a_d: 2, b_d: 2, a_a: 2, b_a: 2 };
 const POLICIES = [
   { name: "Fixed (visitor's stated choice)", start(v) { this.f = v.stated; },
     recognize() { return this.f; }, boundary() { return null; }, event() {} },
@@ -81,8 +107,14 @@ const POLICIES = [
       if (e === "request_more") this.dens = "detailed"; if (e.startsWith("override:")) this.cur = e.split(":")[1]; } },
   sessionPolicy("Fixed-step utility (current)", (v) => new Session(newUserState({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [] }), { config: defaultConfig() })),
   sessionPolicy("Bayesian, neutral prior", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [] }, { config: bayesConfig() })),
-  sessionPolicy("Bayesian, practice behaviour as prior (no question)", (v) => { const pp = practicePrior(v.practice);
-    return new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], a_d: 2 + pp.a_d, b_d: 2 + pp.b_d, a_a: 2 + pp.a_a, b_a: 2 + pp.b_a }, { config: bayesConfig() }); }),
+  sessionPolicy("Bayesian, practice behaviour as prior (no question)", (v) =>
+    new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], ...practiceOn(NEUTRAL, v) }, { config: bayesConfig() })),
+  sessionPolicy("Bayesian, practice prior + value-of-information question", (v) =>
+    new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], ...practiceOn(NEUTRAL, v) }, { config: bayesConfig() }), { ask: true }),
+  sessionPolicy("Bayesian, population + practice prior", (v) =>
+    new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], ...practiceOn(POP, v) }, { config: bayesConfig() })),
+  sessionPolicy("Bayesian, population + practice prior + VOI question", (v) =>
+    new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], ...practiceOn(POP, v) }, { config: bayesConfig() }), { ask: true }),
   sessionPolicy("Bayesian, stated choice as prior", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], format_preference: v.stated }, { config: bayesConfig() })),
   sessionPolicy("Bayesian, stated prior, no history (ablation)", (v) => new BayesSession({ familiarity: v.fam, accessibility: v.constraint ? [v.constraint] : [], format_preference: v.stated }, { config: bayesConfig(), useHistory: false })),
 ];
@@ -91,7 +123,7 @@ const POLICIES = [
 function visit(policy, v, seed) {
   const r = rng(seed);                      // same visitor + rooms + reactions for every policy
   policy.start(v);
-  let segs = 0, ok = 0, okLate = 0, segsLate = 0, effort = 0, switches = 0, times = [];
+  let segs = 0, ok = 0, okLate = 0, segsLate = 0, effort = 0, switches = 0, questions = 0, times = [];
   for (let k = 0; k < ART; k++) {
     const room = makeRoom(r), dk = v.fatigue ? Math.max(0.02, v.d0 - VISITOR.fatigueStep * k) : v.d0;
     const wants = r() < dk;
@@ -124,8 +156,9 @@ function visit(policy, v, seed) {
       else if (r() < VISITOR.pReplay) policy.event("replay");
       if (r() < VISITOR.pDwell) policy.event("dwell_long");
     }
+    if (policy.afterArtwork && k < ART - 1) { const asked = policy.afterArtwork(v, dk, r); questions += asked; effort += asked; }
   }
-  return { suit: ok / segs, suitLate: segsLate ? okLate / segsLate : NaN, effort, switches, times };
+  return { suit: ok / segs, suitLate: segsLate ? okLate / segsLate : NaN, effort, switches, questions, times };
 }
 
 // ---------------------------------------------------------------- run
@@ -141,7 +174,7 @@ for (const p of POLICIES) {
   times.sort((a, b) => a - b);
   const grp = (pred) => { const g = rows.filter((_, i) => pred(makeVisitor(rng(1000 + i)))); return g.reduce((a, r) => a + r.suit, 0) / g.length; };
   out.push({ policy: p.name, suitable: mean("suit"), suitable_ci: ci("suit"), suitable_late: mean("suitLate"), suitable_late_ci: ci("suitLate"),
-    effort: mean("effort"), switches: mean("switches"),
+    effort: mean("effort"), switches: mean("switches"), questions: mean("questions"),
     suitable_audio_only: grp((v) => v.constraint === "no_text"), suitable_fatigue: grp((v) => v.fatigue),
     us_median: times[Math.floor(times.length / 2)] * 1000, us_p99: times[Math.floor(times.length * 0.99)] * 1000 });
 }
@@ -150,15 +183,15 @@ const pct = (x) => `${(100 * x).toFixed(1)}%`;
 console.log(`${NV} simulated visitors x ${ART} artworks\n`);
 console.table(out.map((o) => ({ policy: o.policy, "suitable": `${pct(o.suitable)} ±${(100 * o.suitable_ci).toFixed(1)}`, "artworks 5-8": pct(o.suitable_late),
   "audio-only": pct(o.suitable_audio_only), "fading interest": pct(o.suitable_fatigue), "visitor actions": o.effort.toFixed(2),
-  "auto switches": o.switches.toFixed(2), "µs/decision (p50/p99)": `${o.us_median.toFixed(0)}/${o.us_p99.toFixed(0)}` })));
+  "auto switches": o.switches.toFixed(2), questions: o.questions.toFixed(2), "µs/decision (p50/p99)": `${o.us_median.toFixed(0)}/${o.us_p99.toFixed(0)}` })));
 
 const mdIdx = process.argv.indexOf("--md");
 if (mdIdx > 0) writeFileSync(process.argv[mdIdx + 1], [
-  `# Policy comparison on simulated visits`, "", `${NV} simulated visitors × ${ART} artworks; same visitors, rooms and reactions for every policy (common random numbers).`,
+  `# Policy comparison on simulated visits${SKEW ? " (skewed population)" : ""}`, "", `${NV} simulated visitors × ${ART} artworks; same visitors, rooms and reactions for every policy (common random numbers).${SKEW ? " Population: most visitors prefer brief content and audio." : ""}`,
   `"Suitable" = share of content segments shown in a format that fits the visitor's hidden interest, constraint, room noise and walking state.`, "",
-  "| Policy | Suitable (95% CI) | Artworks 5–8 | Audio-only visitors | Fading interest | Visitor actions / visit | Auto switches / visit | µs per decision (p50 / p99) |",
-  "|---|---|---|---|---|---|---|---|",
-  ...out.map((o) => `| ${o.policy} | ${pct(o.suitable)} ± ${(100 * o.suitable_ci).toFixed(1)} | ${pct(o.suitable_late)} | ${pct(o.suitable_audio_only)} | ${pct(o.suitable_fatigue)} | ${o.effort.toFixed(2)} | ${o.switches.toFixed(2)} | ${o.us_median.toFixed(0)} / ${o.us_p99.toFixed(0)} |`),
+  "| Policy | Suitable (95% CI) | Artworks 5–8 | Audio-only visitors | Fading interest | Visitor actions / visit | Questions / visit | Auto switches / visit | µs per decision (p50 / p99) |",
+  "|---|---|---|---|---|---|---|---|---|",
+  ...out.map((o) => `| ${o.policy} | ${pct(o.suitable)} ± ${(100 * o.suitable_ci).toFixed(1)} | ${pct(o.suitable_late)} | ${pct(o.suitable_audio_only)} | ${pct(o.suitable_fatigue)} | ${o.effort.toFixed(2)} | ${o.questions.toFixed(2)} | ${o.switches.toFixed(2)} | ${o.us_median.toFixed(0)} / ${o.us_p99.toFixed(0)} |`),
   "", "Simulator assumptions:", "```json", JSON.stringify(VISITOR, null, 1), "```",
   "Limits: the simulator encodes our assumptions about visitor behaviour; it compares policies under those assumptions and does not show that visitors learn more or feel less loaded. Timing is Node.js on a laptop, not the phone."].join("\n") + "\n");
 const jIdx = process.argv.indexOf("--json");

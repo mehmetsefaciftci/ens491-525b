@@ -148,7 +148,7 @@ export function initStudy(api) {
       const adaptivePractice = blk.system === "adaptive" && PRIOR_MODE === "practice";
       const user = { familiarity: S.participant.familiarity, accessibility: S.participant.accessibility, known: S.participant.known, known_artworks: S.participant.known_artworks,
         format_preference: adaptivePractice ? null : S.participant.format_preference,
-        prior: adaptivePractice ? { a_d: 2 + pp.a_d, b_d: 2 + pp.b_d, a_a: 2 + pp.a_a, b_a: 2 + pp.b_a } : null };
+        prior: adaptivePractice ? (() => { const b0 = api.basePrior(); return { a_d: b0.a_d + pp.a_d, b_d: b0.b_d + pp.b_d, a_a: b0.a_a + pp.a_a, b_a: b0.b_a + pp.b_a }; })() : null };
       if (!S.sessions[blk.system]) S.sessions[blk.system] = api.beginSystem(blk.system, user);
       else api.setSession(S.sessions[blk.system]);
       api.meta.events.push({ t: now(), e: "block_start", block: b + 1, ...blk });
@@ -173,7 +173,9 @@ export function initStudy(api) {
         S.blocks[b].artworks.push({ label, first_format: d?.action ?? null, recognized_t: t.recognized_t, done_t: t.done_t,
           interaction_s: t.recognized_t != null ? +(t.done_t - t.recognized_t).toFixed(2) : null,
           p_load_end: t.p_load_end, load_terms: t.load_terms, load_features: t.load_features });
-        if (k + 1 < PER_BLOCK) artwork(b, k + 1); else blockQuestions(b);
+        bar.classList.add("hidden");
+        // value-of-information question (adaptive arm only; the fixed arm never asks)
+        api.askQuestion(() => { if (k + 1 < PER_BLOCK) artwork(b, k + 1); else blockQuestions(b); });
       };
     }, (other) => {                           // the camera found a different painting
       bar.querySelector(".grow").innerHTML = `${prompt}<br><small>That is “${other.title}”, not this one.</small>`;

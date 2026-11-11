@@ -19,7 +19,9 @@
   "pOverrideNoisyAudio": 0.6,
   "pOverrideStrongPref": 0.3,
   "micSd": 3,
-  "pStatedWrong": 0.15
+  "pStatedWrong": 0.15,
+  "pAnswerWrong": 0.15,
+  "skew": null
  },
  "results": [
   {
@@ -30,10 +32,11 @@
    "suitable_late_ci": 0.014321712427733477,
    "effort": 2.785,
    "switches": 0,
+   "questions": 0,
    "suitable_audio_only": 0.6793201208334051,
    "suitable_fatigue": 0.5274419051094189,
-   "us_median": 0.10000000000331966,
-   "us_p99": 1.5000000000071623
+   "us_median": 0.19999999999242846,
+   "us_p99": 2.0999999999986585
   },
   {
    "policy": "Rule-based (starts from stated choice)",
@@ -43,10 +46,11 @@
    "suitable_late_ci": 0.013396901678209849,
    "effort": 2.037,
    "switches": 0.4285,
+   "questions": 0,
    "suitable_audio_only": 0.673447777244981,
    "suitable_fatigue": 0.5758406458036617,
    "us_median": 0.2000000000066393,
-   "us_p99": 0.9000000000014552
+   "us_p99": 1.8000000000029104
   },
   {
    "policy": "Fixed-step utility (current)",
@@ -56,10 +60,11 @@
    "suitable_late_ci": 0.012925394559445275,
    "effort": 3.1585,
    "switches": 0.4825,
+   "questions": 0,
    "suitable_audio_only": 0.551857940037742,
    "suitable_fatigue": 0.3860838351510994,
-   "us_median": 3.899999999987358,
-   "us_p99": 18.900000000002137
+   "us_median": 4.100000000050841,
+   "us_p99": 19.099999999980355
   },
   {
    "policy": "Bayesian, neutral prior",
@@ -69,10 +74,11 @@
    "suitable_late_ci": 0.01277513505356983,
    "effort": 3.0835,
    "switches": 0.0105,
+   "questions": 0,
    "suitable_audio_only": 0.5558673459411515,
    "suitable_fatigue": 0.39175611719313336,
-   "us_median": 462.99999999973807,
-   "us_p99": 1353.9999999999281
+   "us_median": 470.9999999977299,
+   "us_p99": 1408.7999999992462
   },
   {
    "policy": "Bayesian, practice behaviour as prior (no question)",
@@ -82,10 +88,53 @@
    "suitable_late_ci": 0.013333089187707804,
    "effort": 2.8415,
    "switches": 0.0075,
+   "questions": 0,
    "suitable_audio_only": 0.5415847953884939,
    "suitable_fatigue": 0.40854294625250487,
-   "us_median": 461.99999999953434,
-   "us_p99": 1329.3000000048778
+   "us_median": 472.90000000066357,
+   "us_p99": 1434.4999999957508
+  },
+  {
+   "policy": "Bayesian, practice prior + value-of-information question",
+   "suitable": 0.513589679902109,
+   "suitable_ci": 0.010571792903863186,
+   "suitable_late": 0.5253503241040006,
+   "suitable_late_ci": 0.013895161452310102,
+   "effort": 4.141,
+   "switches": 0.012,
+   "questions": 1.512,
+   "suitable_audio_only": 0.5988466580848247,
+   "suitable_fatigue": 0.48041565968455285,
+   "us_median": 457.09999999962747,
+   "us_p99": 1444.8999999876833
+  },
+  {
+   "policy": "Bayesian, population + practice prior",
+   "suitable": 0.4897075048837307,
+   "suitable_ci": 0.010780576464247203,
+   "suitable_late": 0.5046118146559313,
+   "suitable_late_ci": 0.01346468350533547,
+   "effort": 2.159,
+   "switches": 0.006,
+   "questions": 0,
+   "suitable_audio_only": 0.5975469580083409,
+   "suitable_fatigue": 0.4831918500866441,
+   "us_median": 459.6000000019558,
+   "us_p99": 1393.2999999960884
+  },
+  {
+   "policy": "Bayesian, population + practice prior + VOI question",
+   "suitable": 0.5354213258739148,
+   "suitable_ci": 0.010376163836734363,
+   "suitable_late": 0.5521986301280419,
+   "suitable_late_ci": 0.013406522773522694,
+   "effort": 3.783,
+   "switches": 0.0065,
+   "questions": 1.6125,
+   "suitable_audio_only": 0.6237414859588116,
+   "suitable_fatigue": 0.5161195034703338,
+   "us_median": 456.79999999993015,
+   "us_p99": 1391.9999999925494
   },
   {
    "policy": "Bayesian, stated choice as prior",
@@ -95,10 +144,11 @@
    "suitable_late_ci": 0.013763057487075165,
    "effort": 2.5565,
    "switches": 0.0145,
+   "questions": 0,
    "suitable_audio_only": 0.650609229302934,
    "suitable_fatigue": 0.5240094244003902,
-   "us_median": 460.6000000057975,
-   "us_p99": 1300.4999999975553
+   "us_median": 444.50000001234,
+   "us_p99": 1254.8999999999069
   },
   {
    "policy": "Bayesian, stated prior, no history (ablation)",
@@ -108,10 +158,11 @@
    "suitable_late_ci": 0.014219791869357599,
    "effort": 2.554,
    "switches": 0.0085,
+   "questions": 0,
    "suitable_audio_only": 0.6620186955161899,
    "suitable_fatigue": 0.5454171355831982,
-   "us_median": 478.9000000018859,
-   "us_p99": 1539.8999999888474
+   "us_median": 443.9999999885913,
+   "us_p99": 1249.7999999905005
   }
  ]
 }

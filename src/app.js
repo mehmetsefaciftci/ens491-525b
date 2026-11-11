@@ -42,6 +42,8 @@ let artworkLabel = null, recognizedAt = null, onRecognized = null;
 meta.exposure = [];             // which segment was shown, in which format (for exposure-based recall)
 let load = new LoadEstimator();  // behavioural cognitive-load estimate, one per session
 let captions = false, liked = false, fontScale = 1;
+let populationPrior = null;      // content/population-prior.json (empirical Bayes), if present
+let textSecs = 0, textOutSecs = 0, splitSent = false;   // split-attention signal per artwork
 try { fontScale = Math.min(1.6, Math.max(0.8, +localStorage.getItem("ca-fs") || 1)); } catch {}
 let segShownAt = null;
 
@@ -112,7 +114,7 @@ function recognize() {
   const pn = obs.noise_or_missing == null ? C.P_NOISY_UNKNOWN : pNoisy(C, obs.noise_or_missing);
   const knownHere = knownArtworks.includes(art.id) ? art.detail.filter((d) => d.priority !== 1).map((d) => d.tag) : [];
   artCtx = { known: [...known, ...knownHere], pMoving: obs.optional_sensor_features.p_moving, pNoisy: pn };
-  load.newArtwork(); liked = false;
+  load.newArtwork(); liked = false; textSecs = 0; textOutSecs = 0; splitSent = false;
   const d = session.recognize(obs);
   if (d) { load.context({ pMoving: artCtx.pMoving, pNoisy: pn, audio: d.action?.endsWith("audio") }); d.load_terms = load.terms(); }
   if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);   // policy only, independent of rendering
@@ -365,7 +367,9 @@ function foundArtwork(i) {
 }
 
 function makeSession(policyName, { familiarity = 4, accessibility = [], format_preference = null, prior = null } = {}) {
-  const user = { familiarity, accessibility, format_preference, ...(prior || {}) };
+  // Bayesian sessions start from the population prior when one exists (and no other prior is given).
+  const base = !prior && !format_preference && populationPrior ? { a_d: populationPrior.a_d, b_d: populationPrior.b_d, a_a: populationPrior.a_a, b_a: populationPrior.b_a } : null;
+  const user = { familiarity, accessibility, format_preference, ...(prior || base || {}) };
   if (policyName === "bayes") return new BayesSession(user, { config: C, clock: now });
   if (policyName === "fixed") return new FixedSession(user, { clock: now });
   return new Session(newUserState(user), { config: C, clock: now });   // "fixedstep": draft-proposal policy
@@ -440,6 +444,13 @@ function tick() {
   metrics.push({ t: now(), fps: frames, noise_db: lvl == null ? null : +lvl.toFixed(1), tracking, format: player.action,
     artwork: session?.artwork ?? null, audio_playing: !!(player.isAudio() && !player.finished), captions,
     p_moving: motion.available ? +motion.pMoving().toFixed(3) : null });
+  // Split attention (Sweller; Mayer's modality principle): reading text while the painting is
+  // out of view most of the time is weak evidence that listening would suit this visitor better.
+  if (session && player.action?.endsWith("text") && !player.finished) {
+    textSecs++; if (!tracking) textOutSecs++;
+    if (!splitSent && textSecs >= 4 && textOutSecs / textSecs > 0.6) { session.event("text_without_artwork", now()); splitSent = true;
+      meta.events.push({ t: now(), e: "split_attention", share_out_of_view: +(textOutSecs / textSecs).toFixed(2) }); }
+  }
   if (session && tracking && trackedSince && !dwellSent && player.action?.startsWith("brief")
       && (performance.now() - trackedSince) / 1000 > DWELL_LONG_S) { session.event("dwell_long", now()); dwellSent = true; }
   $("#hFps").textContent = `${frames} fps`;
@@ -508,12 +519,35 @@ $("#panel").style.setProperty("--fs", fontScale);
 $("#bSettings").onclick = () => $("#settings").classList.remove("hidden");
 $("#bClose").onclick = () => $("#settings").classList.add("hidden");
 $("#hToggle").onclick = (e) => { const body = $("#hBody"); body.classList.toggle("hidden"); e.target.textContent = body.classList.contains("hidden") ? "▸" : "▾"; };
+// One tap question between artworks, only if its value of information exceeds its cost.
+function askQuestion(next) {
+  if (!(session instanceof BayesSession)) return next();
+  const lvl = forceNoisy ? 72 : noise.level();
+  const q = session.questionToAsk({ noise: lvl, pMoving: motion.available ? motion.pMoving() : 0, pLoad: load.pHigh() });
+  meta.events.push({ t: now(), e: "voi", ask: q.ask, voi: q.voi, reason: q.reason });
+  if (!q.ask) return next();
+  const box = $("#qbox");
+  const [text, a, b] = q.ask === "detail" ? ["For the next painting, would you like it shorter or longer?", ["shorter", "Shorter"], ["longer", "Longer"]]
+    : ["For the next painting, would you rather listen or read?", ["listen", "Listen"], ["read", "Read"]];
+  box.innerHTML = `<span class="grow">${text}</span><button data-a="${a[0]}">${a[1]}</button><button data-a="${b[0]}">${b[1]}</button><button data-a="skip">No preference</button>`;
+  box.classList.remove("hidden");
+  const t0 = now();
+  box.querySelectorAll("button").forEach((btn) => (btn.onclick = () => {
+    const ans = btn.dataset.a;
+    if (ans !== "skip") session.event(`answer:${ans}`, now());
+    meta.events.push({ t: now(), e: "voi_answer", question: q.ask, answer: ans, seconds: +(now() - t0).toFixed(1) });
+    box.classList.add("hidden"); next();
+  }));
+}
+
 $("#bNewArt").onclick = () => {
   if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
   player.stop(); player.action = null; $("#panel").classList.add("hidden");
-  pendingRecognition = true; meta.events.push({ t: now(), e: "next_artwork" });
-  if (tracking) recognize();
-  updateHud();
+  askQuestion(() => {
+    pendingRecognition = true; meta.events.push({ t: now(), e: "next_artwork" });
+    if (tracking) recognize();
+    updateHud();
+  });
 };
 if (DEBUG || params.has("nocam")) {   // desktop testing without the printed artwork; every decision is flagged tracking_simulated
   const b = document.createElement("button"); b.className = "pill btn"; b.textContent = "Simulate target";
@@ -527,6 +561,7 @@ if (DEBUG || params.has("nocam")) {   // desktop testing without the printed art
 const contentUrl = params.get("content") && /^content\/[\w.-]+\.json$/.test(params.get("content")) ? params.get("content") : "content/artworks.json";
 const resp = await fetch(contentUrl);
 content = await resp.json();
+try { const pr = await fetch("content/population-prior.json", { cache: "no-cache" }); if (pr.ok) { populationPrior = await pr.json(); meta.population_prior = populationPrior; } } catch {}
 art = content.artworks[0];
 bindSettings();
 for (const k of art.prior_knowledge || []) {
@@ -561,6 +596,8 @@ if (STUDY) {
       artworkLabel = null; onRecognized = null; pendingRecognition = false; recognizedAt = null; expectedArtId = null; onWrongArtwork = null;
       return t;
     },
+    askQuestion,
+    basePrior: () => populationPrior ? { a_d: populationPrior.a_d, b_d: populationPrior.b_d, a_a: populationPrior.a_a, b_a: populationPrior.b_a } : { a_d: 2, b_d: 2, a_a: 2, b_a: 2 },
     simulateTarget: params.has("nocam")
       ? () => { simulatedTracking = true; foundArtwork(expectedArtId ? artIndex(expectedArtId) : 0); }
       : null,

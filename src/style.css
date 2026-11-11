@@ -80,3 +80,5 @@ fieldset { border: 1px solid var(--line); border-radius: 10px; display: flex; ga
 .studybar { position: fixed; top: 8px; left: 8px; right: 8px; z-index: 22; background: var(--card); border: 1px solid var(--line);
   border-radius: 14px; padding: 10px 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 15px; }
 .studybar .grow { flex: 1 1 auto; }
+.qbox { top: auto; bottom: 12px; z-index: 30; font-size: 17px; }
+.qbox button { min-height: 48px; }

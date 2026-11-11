@@ -1,11 +1,10 @@
 {
-  "_note": "Feasibility-demo content. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Each segment lists its source; checked 11 Nov 2026 against Wikipedia (which cites Aslan 2014 and Eldem 2012) and the Pera Museum / Google Arts & Culture pages. Before the study, check the printed sources directly. Optional segments carry a tag (used to filter facts the visitor already knows) and a priority (1 = kept first when detail is shortened). Recall items: core and optional test retention; 'transfer' items test applying the content (Mayer 2009).",
+  "_note": "Study content: 8 paintings planned (A3 Seker Ahmed Pasa 'Woodcutter in the Forest' pending: no public-domain image found). Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Optional segments carry a tag and a priority (1 = kept first when detail is shortened). Recall items: core and optional test retention; 'transfer' items test applying the content (Mayer 2009). Facts checked 11 Nov 2026 against Wikipedia (with the sources it cites) and museum records; descriptions marked 'verify' and all facts must be checked by the content owner before participants see them.",
   "lang": "en-US",
   "artworks": [
     {
       "id": "A1",
-      "target": "targets/artwork.jpg",
-      "fallback_target": "targets/placeholder.jpg",
+      "target": "targets/A1.jpg",
       "title": "The Tortoise Trainer",
       "artist": "Osman Hamdi Bey",
       "year": "1906",
@@ -160,7 +159,611 @@
           "tag": "collection",
           "label": "I already know which museum holds it"
         }
-      ]
+      ],
+      "orientation": "portrait",
+      "recognisability": "medium (high in Turkey)"
+    },
+    {
+      "id": "A2",
+      "target": "targets/A2.jpg",
+      "title": "Portrait of Sultan Mehmed II",
+      "artist": "Gentile Bellini (attributed)",
+      "year": "1480",
+      "orientation": "portrait",
+      "recognisability": "medium",
+      "image_credit": "Public domain; Wikimedia Commons, 'Bellini, Gentile - Portrait of Mehmed II - National Gallery, London.jpg'",
+      "status": "checked against secondary sources (11 Nov 2026); visual description in c2 to verify",
+      "core": [
+        {
+          "id": "c1",
+          "text": "This portrait of Sultan Mehmed II, the Ottoman ruler who conquered Constantinople, is dated 1480 and attributed to the Venetian painter Gentile Bellini.",
+          "source": "National Gallery NG3099 record; Wikipedia 'Portrait of Mehmet II'"
+        },
+        {
+          "id": "c2",
+          "text": "The sultan is shown in profile, framed by a stone arch, with an embroidered cloth hanging over the ledge in front of him.",
+          "source": "Visual description; verify against the National Gallery page"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "Bellini went to Istanbul after Venice and the Ottomans made peace in 1479, when the sultan asked Venice to send a good painter.",
+          "source": "Wikipedia 'Gentile Bellini'",
+          "optional": true,
+          "tag": "context",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "Much of the paint was redone in the nineteenth century, especially the figure, so it is debated how much is Bellini's own work.",
+          "source": "National Gallery record (evidence of 19th-century repainting)",
+          "optional": true,
+          "tag": "condition",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "An old inscription at the lower right gives the date 25 November 1480. The portrait is in the National Gallery in London.",
+          "source": "Wikimedia file page quoting the National Gallery",
+          "optional": true,
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c1",
+          "type": "core",
+          "q": "Which sultan does the portrait show?",
+          "a": "Mehmed II (Fatih)",
+          "keywords": [
+            [
+              "mehmed",
+              "mehmet",
+              "fatih",
+              "conqueror"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c1",
+          "type": "core",
+          "q": "In which year is the portrait dated?",
+          "a": "1480",
+          "keywords": [
+            [
+              "1480"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "d2",
+          "type": "transfer",
+          "q": "Why can we not be sure how the portrait looked when Bellini finished it?",
+          "a": "it was largely repainted in the 19th century",
+          "keywords": [
+            [
+              "repaint",
+              "overpaint",
+              "restor",
+              "painted over",
+              "redone",
+              "boyan",
+              "restorasyon",
+              "değiştir"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "A4",
+      "target": "targets/A4.jpg",
+      "title": "Ambassador Cornelis Calkoen at his Audience with Sultan Ahmed III",
+      "artist": "Jean-Baptiste Vanmour",
+      "year": "c. 1727",
+      "orientation": "landscape",
+      "recognisability": "low",
+      "image_credit": "Public domain; Rijksmuseum SK-A-4078 via Wikimedia Commons",
+      "status": "checked against secondary sources (11 Nov 2026); visual description in c2 to verify",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Jean-Baptiste Vanmour painted the Dutch ambassador Cornelis Calkoen being received by Sultan Ahmed III in Istanbul on 14 September 1727.",
+          "source": "Rijksmuseum SK-A-4078 title; Wikipedia 'Jean Baptiste Vanmour'"
+        },
+        {
+          "id": "c2",
+          "text": "The sultan sits on his throne in the palace while the ambassador and his party stand before him.",
+          "source": "Visual description; verify against the Rijksmuseum page"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "Vanmour, born in Valenciennes in 1671, came to Istanbul in 1699 with the French ambassador, and audiences with the sultan became his speciality.",
+          "source": "Wikipedia 'Jean Baptiste Vanmour' (Faroqhi 2006)",
+          "optional": true,
+          "tag": "artist",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "Calkoen asked Vanmour to record his audience. Vanmour knew the court ceremony because he could enter the palace with an ambassador's retinue.",
+          "source": "Wikipedia 'Jean Baptiste Vanmour'",
+          "optional": true,
+          "tag": "commission",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "Calkoen took the paintings home; they passed through Amsterdam institutions, were reunited in 1903 and hang together in the Rijksmuseum.",
+          "source": "Wikipedia; Rijksmuseum catalogue 1910",
+          "optional": true,
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c1",
+          "type": "core",
+          "q": "Which sultan received the ambassador?",
+          "a": "Ahmed III",
+          "keywords": [
+            [
+              "ahmed",
+              "ahmet"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c1",
+          "type": "core",
+          "q": "Which country did the ambassador represent?",
+          "a": "the Dutch Republic (Netherlands)",
+          "keywords": [
+            [
+              "dutch",
+              "netherlands",
+              "holland",
+              "hollanda"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "d2",
+          "type": "transfer",
+          "q": "Why could Vanmour show the ceremony so accurately?",
+          "a": "he entered the palace with ambassadors' retinues and knew the protocol",
+          "keywords": [
+            [
+              "palace",
+              "retinue",
+              "protocol",
+              "ceremony",
+              "inside",
+              "attended",
+              "saray",
+              "elçi",
+              "tören"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "A5",
+      "target": "targets/A5.jpg",
+      "title": "The Starry Night",
+      "artist": "Vincent van Gogh",
+      "year": "1889",
+      "orientation": "landscape",
+      "recognisability": "very high",
+      "image_credit": "Public domain; Google Art Project via Wikimedia Commons",
+      "status": "checked against secondary sources (11 Nov 2026)",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Vincent van Gogh painted The Starry Night in June 1889 while staying at the asylum of Saint-Paul-de-Mausole in Saint-Rémy-de-Provence.",
+          "source": "Wikipedia 'The Starry Night' (Pickvance 1986; Naifeh & Smith 2011)"
+        },
+        {
+          "id": "c2",
+          "text": "It shows the view from his east-facing window just before sunrise: a swirling sky, a crescent moon and a tall cypress tree in the foreground.",
+          "source": "Wikipedia 'The Starry Night'"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "The brightest star, just to the right of the cypress, is thought to be Venus, which was visible at dawn in Provence that spring.",
+          "source": "Wikipedia (Whitney 1986; Boime 1984)",
+          "optional": true,
+          "tag": "sky",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "The village could not be seen from his window. Van Gogh added it from a sketch he had made on a hillside above Saint-Rémy.",
+          "source": "Wikipedia (Boime; Naifeh & Smith)",
+          "optional": true,
+          "tag": "village",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "The Museum of Modern Art in New York acquired the painting in 1941 through the Lillie P. Bliss Bequest.",
+          "source": "Wikipedia; MoMA provenance",
+          "optional": true,
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c1",
+          "type": "core",
+          "q": "Where was Van Gogh staying when he painted it?",
+          "a": "an asylum in Saint-Rémy",
+          "keywords": [
+            [
+              "asylum",
+              "saint-remy",
+              "saint remy",
+              "saint-rémy",
+              "hospital",
+              "hastane",
+              "akıl"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c2",
+          "type": "core",
+          "q": "Which tall tree stands in the foreground?",
+          "a": "a cypress",
+          "keywords": [
+            [
+              "cypress",
+              "selvi",
+              "servi"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "d2",
+          "type": "transfer",
+          "q": "Why is the painting not an exact picture of the view from his window?",
+          "a": "he added the village from another sketch",
+          "keywords": [
+            [
+              "village",
+              "added",
+              "invent",
+              "imagin",
+              "sketch",
+              "köy",
+              "hayal",
+              "ekle"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "A6",
+      "target": "targets/A6.jpg",
+      "title": "The Great Wave off Kanagawa",
+      "artist": "Katsushika Hokusai",
+      "year": "c. 1831",
+      "orientation": "landscape",
+      "recognisability": "very high",
+      "image_credit": "CC0; Metropolitan Museum of Art (DP141042) via Wikimedia Commons",
+      "status": "checked against secondary sources (11 Nov 2026)",
+      "core": [
+        {
+          "id": "c1",
+          "text": "The Great Wave off Kanagawa is a woodblock print by Katsushika Hokusai, the first print of his series Thirty-six Views of Mount Fuji, designed around 1831.",
+          "source": "Wikipedia 'The Great Wave off Kanagawa' (British Museum)"
+        },
+        {
+          "id": "c2",
+          "text": "A huge wave curls over three boats full of rowers, while snow-capped Mount Fuji appears in the background.",
+          "source": "Wikipedia (Cartwright & Nakamura 2009)"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "It was among the first Japanese prints to use Prussian blue, a pigment imported through the Dutch and widely used from 1829.",
+          "source": "Wikipedia (Bayou 2008)",
+          "optional": true,
+          "tag": "pigment",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "The boats are fast barges that carried live fish to the markets of Edo; each has eight rowers.",
+          "source": "Wikipedia (Cartwright & Nakamura 2009)",
+          "optional": true,
+          "tag": "boats",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "About a thousand copies were printed at first. This impression belongs to the Metropolitan Museum of Art in New York.",
+          "source": "Wikipedia (Korenberg, British Museum); Met DP141042",
+          "optional": true,
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c2",
+          "type": "core",
+          "q": "Which mountain appears in the background?",
+          "a": "Mount Fuji",
+          "keywords": [
+            [
+              "fuji"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c2",
+          "type": "core",
+          "q": "How many boats are under the wave?",
+          "a": "three",
+          "keywords": [
+            [
+              "three",
+              "3",
+              "üç"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why did the blue of this print look new to buyers at the time?",
+          "a": "it used imported Prussian blue",
+          "keywords": [
+            [
+              "prussian",
+              "imported",
+              "europe",
+              "dutch",
+              "holland",
+              "new pigment",
+              "ithal",
+              "avrupa",
+              "prusya"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "A7",
+      "target": "targets/A7.jpg",
+      "title": "Girl with a Pearl Earring",
+      "artist": "Johannes Vermeer",
+      "year": "c. 1665",
+      "orientation": "portrait",
+      "recognisability": "very high",
+      "image_credit": "Public domain; Mauritshuis via Wikimedia Commons",
+      "status": "checked against secondary sources (11 Nov 2026)",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Johannes Vermeer painted Girl with a Pearl Earring around 1665, in oil on canvas.",
+          "source": "Wikipedia 'Girl with a Pearl Earring' (Mauritshuis)"
+        },
+        {
+          "id": "c2",
+          "text": "A girl in an oriental turban looks over her shoulder at the viewer, with a large pearl hanging from her ear.",
+          "source": "Wikipedia 'Girl with a Pearl Earring'"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "It is a tronie, a Dutch picture of a head or a character type, not a portrait of a known person.",
+          "source": "Wikipedia",
+          "optional": true,
+          "tag": "type",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "A 2018 research project found delicate eyelashes and a green curtain behind the girl that can no longer be seen.",
+          "source": "Wikipedia ('The Girl in the Spotlight', 2018)",
+          "optional": true,
+          "tag": "research",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "A collector bought it at auction in 1881 for two guilders and thirty cents; it came to the Mauritshuis in The Hague by bequest in 1902.",
+          "source": "Wikipedia",
+          "optional": true,
+          "tag": "collection",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c2",
+          "type": "core",
+          "q": "What does the girl wear on her head?",
+          "a": "a turban",
+          "keywords": [
+            [
+              "turban",
+              "türban",
+              "sarık",
+              "headscarf",
+              "scarf"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c1",
+          "type": "core",
+          "q": "Around which year was it painted?",
+          "a": "c. 1665",
+          "keywords": [
+            [
+              "1665",
+              "1660"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why does nobody know who the girl was?",
+          "a": "it is a tronie, a character study rather than a portrait",
+          "keywords": [
+            [
+              "tronie",
+              "not a portrait",
+              "character",
+              "type",
+              "study",
+              "imaginary",
+              "model",
+              "portre değil",
+              "hayali"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "A8",
+      "target": "targets/A8.jpg",
+      "title": "The Hunters in the Snow",
+      "artist": "Pieter Bruegel the Elder",
+      "year": "1565",
+      "orientation": "landscape",
+      "recognisability": "medium",
+      "image_credit": "Public domain; Google Art Project via Wikimedia Commons",
+      "status": "checked against secondary sources (11 Nov 2026)",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Pieter Bruegel the Elder painted The Hunters in the Snow in 1565, in oil on a wooden panel.",
+          "source": "Wikipedia 'The Hunters in the Snow'"
+        },
+        {
+          "id": "c2",
+          "text": "Three tired hunters with their dogs come back through the snow carrying only a fox, while people skate on the frozen ponds below.",
+          "source": "Wikipedia 'The Hunters in the Snow'"
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "text": "It belongs to a series about the times of the year; five of these paintings survive.",
+          "source": "Wikipedia",
+          "optional": true,
+          "tag": "series",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "text": "The inn sign reads 'This is the Golden Hart' and shows a saint linked to hunters, Hubertus or Eustace.",
+          "source": "Wikipedia (Fowler 2014)",
+          "optional": true,
+          "tag": "sign",
+          "priority": 2
+        },
+        {
+          "id": "d3",
+          "text": "It hangs in the Kunsthistorisches Museum in Vienna and was painted as a run of very harsh winters, linked to the Little Ice Age, began.",
+          "source": "Wikipedia (Fowler 2014)",
+          "optional": true,
+          "tag": "context",
+          "priority": 3
+        }
+      ],
+      "recall": [
+        {
+          "id": "q1",
+          "covers": "c2",
+          "type": "core",
+          "q": "Which season does the painting show?",
+          "a": "winter",
+          "keywords": [
+            [
+              "winter",
+              "kış",
+              "snow",
+              "kar"
+            ]
+          ]
+        },
+        {
+          "id": "q2",
+          "covers": "c2",
+          "type": "core",
+          "q": "How many hunters are coming back?",
+          "a": "three",
+          "keywords": [
+            [
+              "three",
+              "3",
+              "üç"
+            ]
+          ]
+        },
+        {
+          "id": "q3",
+          "covers": "c2",
+          "type": "transfer",
+          "q": "What in the scene suggests that the hunt did not go well?",
+          "a": "they carry only a fox and look tired",
+          "keywords": [
+            [
+              "fox",
+              "only",
+              "small",
+              "tired",
+              "little",
+              "nothing",
+              "tilki",
+              "yorgun",
+              "az"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
     }
-  ]
+  ],
+  "targets_mind": "targets/targets.mind"
 }

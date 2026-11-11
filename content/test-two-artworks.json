@@ -5,7 +5,7 @@
   "artworks": [
     {
       "id": "A1",
-      "target": "targets/artwork.jpg",
+      "target": "targets/A1.jpg",
       "fallback_target": "targets/placeholder.jpg",
       "title": "The Tortoise Trainer",
       "artist": "Osman Hamdi Bey",

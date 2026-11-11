@@ -43,6 +43,9 @@ export function bayesConfig() {
     MOTION_TEXT_PENALTY: 0.5,    // [N] text cost x (1 + 0.5 * P(moving))
     SWITCH_CONFIDENCE: 0.75,     // [N] P(improvement) required for an automatic switch
     PREF_PSEUDO: 2.0,            // [N] weight of the format chosen on the practice artwork
+    ASK_COST: 0.04,              // [N] utility cost of interrupting the visitor with one tap question
+    MAX_QUESTIONS: 2,            // [N] questions per visit at most
+    W_ANSWER: 3.0,               // [N] pseudo-counts of a direct answer (the most direct evidence)
     LOAD_WEIGHT: 0.5,            // [N] scales the Appendix A high-minus-low demand cost by excess load
     LOAD_BASE: 0.168,            // P(high load) with no evidence (= logistic(B0) in load.js)
     MC_SAMPLES: 400,
@@ -156,6 +159,30 @@ export function evaluate(C, s, ctx, current, { useHistory = true, seed = 1, base
     pImprove: ref ? wins / C.MC_SAMPLES : null, pBest: bestWins / C.MC_SAMPLES };
 }
 
+// Value of information (decision theory): expected gain from knowing the visitor's preference
+// before the next artwork. EVPI = E_theta[max_a U(a|theta)] - max_a E_theta[U(a|theta)], estimated
+// by Monte Carlo for each question (detail: theta_d, modality: theta_a). Asking is worth it only if
+// EVPI exceeds the cost of interrupting (ASK_COST).
+export function valueOfInformation(C, s, ctx = {}, { samples = 400, seed = 11 } = {}) {
+  const acts = feasibleActions(s);
+  const pn = pNoisy(C, ctx.noise ?? null), pm = ctx.pMoving ?? 0, pl = ctx.pLoad ?? 0;
+  const md = s.a_d / (s.a_d + s.b_d), ma = s.a_a / (s.a_a + s.b_a);
+  const rnd = mulberry32(seed);
+  const res = {};
+  for (const q of ["detail", "modality"]) {
+    if (q === "modality" && new Set(acts.map((a) => a.split("_")[1])).size < 2) { res[q] = 0; continue; }
+    let sumMax = 0; const sums = Object.fromEntries(acts.map((a) => [a, 0]));
+    for (let i = 0; i < samples; i++) {
+      const td = q === "detail" ? betaSample(s.a_d, s.b_d, rnd) : md, ta = q === "modality" ? betaSample(s.a_a, s.b_a, rnd) : ma;
+      let best = -Infinity;
+      for (const a of acts) { const u = utilityAt(C, s, a, td, ta, pn, pm, null, pl).U; sums[a] += u; if (u > best) best = u; }
+      sumMax += best;
+    }
+    res[q] = Math.max(0, sumMax / samples - Math.max(...Object.values(sums)) / samples);
+  }
+  return res;
+}
+
 export class BayesSession {
   constructor(user, { useHistory = true, config = bayesConfig(), clock = () => Date.now() / 1000 } = {}) {
     this.C = config;
@@ -187,6 +214,18 @@ export class BayesSession {
     if (action) { d.modality = action.split("_")[1]; d.density = action.split("_")[0]; }
     this.log.push(d); if (ev) this.lastUtils = ev;
     return d;
+  }
+
+  // Ask one tap question before the next artwork? Returns { ask: "detail"|"modality"|null, voi }.
+  questionToAsk(ctx = {}) {
+    this.asked = this.asked || 0;
+    if (this.asked >= this.C.MAX_QUESTIONS) return { ask: null, voi: null, reason: "question limit reached" };
+    const voi = valueOfInformation(this.C, this.live, ctx, { seed: 100 + this.asked + (this.n || 0) });
+    const [q, v] = Object.entries(voi).sort((a, b) => b[1] - a[1])[0];
+    if (v <= this.C.ASK_COST) return { ask: null, voi, reason: `value of asking ${v.toFixed(3)} <= cost ${this.C.ASK_COST}` };
+    this.asked++;
+    this.log.push({ timestamp: this.clock(), artwork_id: this.artwork || "-", event: "question", question: q, voi });
+    return { ask: q, voi, reason: `value of asking ${v.toFixed(3)} > cost ${this.C.ASK_COST}` };
   }
 
   recognize(obs) {
@@ -237,6 +276,11 @@ export class BayesSession {
     else if (name === "dwell_long") s.a_d += C.W_DWELL;
     else if (name === "left_early") s.b_d += C.W_DWELL;
     else if (name === "like") s.a_d += C.W_IMPLICIT;                         // explicit interest in this painting
+    else if (name === "answer:longer") s.a_d += C.W_ANSWER;                   // value-of-information question
+    else if (name === "answer:shorter") s.b_d += C.W_ANSWER;
+    else if (name === "answer:listen") s.a_a += C.W_ANSWER;
+    else if (name === "answer:read") s.b_a += C.W_ANSWER;
+    else if (name === "text_without_artwork") s.a_a += C.W_DWELL;             // split attention while reading
     else if (name === "transcript_on" && cur.endsWith("audio")) s.b_a += C.W_DWELL;   // reads along: leans to text
     else if (name.startsWith("override:")) {
       const nw = name.split(":")[1];

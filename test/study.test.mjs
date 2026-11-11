@@ -108,4 +108,22 @@ t("practice prior: capped", () => {
     const res = leaveOneSubjectOut(samples); assert.ok(res.auc > 0.8 && res.balanced_accuracy > 0.7, JSON.stringify(res)); });
   t("fit: AUC is 0.5 for uninformative scores", () => assert.equal(auc([0, 1, 0, 1], [0.5, 0.5, 0.5, 0.5]), 0.5));
 }
+{
+  const { valueOfInformation, bayesConfig, newBelief, BayesSession } = await import("../src/policy-bayes.js");
+  const C = bayesConfig();
+  t("VOI: no question when the model is confident", () => {
+    const v = valueOfInformation(C, newBelief(C, { a_d: 12, b_d: 2, a_a: 12, b_a: 2 }), { noise: 45 });
+    assert.ok(v.detail < C.ASK_COST && v.modality < C.ASK_COST, JSON.stringify(v)); });
+  t("VOI: a question when the preference is uncertain and it matters", () => {
+    const v = valueOfInformation(C, newBelief(C, { a_d: 2, b_d: 4 }), { noise: 45 }); assert.ok(Math.max(v.detail, v.modality) > C.ASK_COST, JSON.stringify(v)); });
+  t("VOI: no modality question for a text-only visitor", () =>
+    assert.equal(valueOfInformation(C, newBelief(C, { accessibility: ["no_audio"] }), { noise: 45 }).modality, 0));
+  t("VOI: at most MAX_QUESTIONS per visit, and answers move the belief", () => {
+    const s = new BayesSession({ a_d: 2, b_d: 4 }, { config: C });
+    const asked = [0, 1, 2, 3].map(() => s.questionToAsk({ noise: 45 }).ask).filter(Boolean);
+    assert.ok(asked.length <= C.MAX_QUESTIONS, String(asked.length));
+    const before = s.live.a_d; s.event("answer:longer", 0); assert.equal(s.live.a_d, before + C.W_ANSWER); });
+  t("split attention: reading with the painting out of view leans to audio", () => {
+    const s = new BayesSession({}, { config: C }); const b = s.live.a_a; s.event("text_without_artwork", 0); assert.ok(s.live.a_a > b); });
+}
 console.log(`\n${n} unit tests pass.`);
