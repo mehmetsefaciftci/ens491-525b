@@ -1,5 +1,5 @@
 {
-  "_note": "DRAFT content for the feasibility demo. Every fact must be checked against a cited source by the content owner (T2) before any participant sees it. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2).",
+  "_note": "Feasibility-demo content. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Each segment lists its source; checked 11 Nov 2026 against Wikipedia (which cites Aslan 2014 and Eldem 2012) and the Pera Museum / Google Arts & Culture pages. Before the study, check the printed sources directly.",
   "lang": "en-US",
   "artworks": [
     {
@@ -9,15 +9,28 @@
       "title": "The Tortoise Trainer",
       "artist": "Osman Hamdi Bey",
       "year": "1906",
-      "status": "draft - facts not yet verified",
+      "image_credit": "Public domain; Wikimedia Commons, 'Osman Hamdi Bey - The Tortoise Trainer - Google Art Project.jpg'",
+      "status": "checked against secondary sources (11 Nov 2026)",
       "core": [
-        { "id": "c1", "text": "The Tortoise Trainer was painted in 1906 by Osman Hamdi Bey, a leading Ottoman painter and archaeologist." },
-        { "id": "c2", "text": "An elderly man in a long robe tries to train a group of tortoises, which slowly go their own way." }
+        { "id": "c1", "text": "The Tortoise Trainer is an oil painting from 1906 by Osman Hamdi Bey, an Ottoman painter and archaeologist.",
+          "source": "Wikipedia 'The Tortoise Trainer'; Pera Museum collection record" },
+        { "id": "c2", "text": "An elderly man in a long red robe and a turban holds a ney flute, with a nakkare drum on his back, and tries to train five tortoises.",
+          "source": "Aslan 2014, p. 118 (via Wikipedia); Pera Museum description" }
       ],
       "detail": [
-        { "id": "d1", "optional": true, "text": "The scene is usually said to be set in an upper room of the Green Mosque in Bursa." },
-        { "id": "d2", "optional": true, "text": "Many viewers read the painting as gentle satire on the slow pace of reform; the face of the trainer is often compared with the painter's own." },
-        { "id": "d3", "optional": true, "text": "Today the painting is in the collection of the Pera Museum in Istanbul." }
+        { "id": "d1", "optional": true, "text": "The scene is set in a worn upper room of the Green Mosque in Bursa. The inscription above the window reads: the healing of the hearts is meeting with the beloved.",
+          "source": "Aslan 2014, p. 119; Eldem 2012, p. 380 (via Wikipedia)" },
+        { "id": "d2", "optional": true, "text": "The painting is usually read as satire on the slow and ineffective attempts to reform the Ottoman Empire.",
+          "source": "Wikipedia lead (uncited there); Pera Museum context text. Verify before the study." },
+        { "id": "d3", "optional": true, "text": "This 1906 version hangs in the Pera Museum in Istanbul. Osman Hamdi Bey painted a second version in 1907.",
+          "source": "Pera Museum / Google Arts & Culture; Wikipedia 'Versions'" }
+      ],
+      "recall": [
+        { "id": "q1", "covers": "c1", "type": "core", "q": "Who painted The Tortoise Trainer, and in which year?", "a": "Osman Hamdi Bey, 1906" },
+        { "id": "q2", "covers": "c2", "type": "core", "q": "Which instrument does the man hold in his hands?", "a": "a ney (flute)" },
+        { "id": "q3", "covers": "c2", "type": "core", "q": "How many tortoises is the man training?", "a": "five" },
+        { "id": "q4", "covers": "d1", "type": "optional", "q": "In which building is the scene set?", "a": "the Green Mosque in Bursa" },
+        { "id": "q5", "covers": "d3", "type": "optional", "q": "In which museum is the 1906 version today?", "a": "the Pera Museum, Istanbul" }
       ]
     }
   ]
