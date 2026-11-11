@@ -11,6 +11,8 @@ import { selectSegments } from "./filter.js";
 import { FixedSession } from "./policy-fixed.js";
 import { initStudy } from "./study-ui.js";
 import { LoadEstimator } from "./load.js";
+import { choosePlacement } from "./placement.js";
+import { Vector3 } from "three";
 
 const BUILD = "spike-2026-11-11c";
 const $ = (s) => document.querySelector(s);
@@ -31,13 +33,16 @@ const meta = { build: BUILD, started_at: new Date().toISOString(), user_agent: n
 let session, content, art, targetAspect = 1.33, mindData = null;
 let tracking = false, simulatedTracking = false, forceNoisy = false;
 let visit = 0, pendingRecognition = true, frames = 0, lastLatency = null, trackedSince = null, dwellSent = false;
-let panelObj = null, pinned = params.has("pin") || STUDY, side = "right";
+let panelObj = null, pinned = params.has("pin"), side = "auto";
+let userPinned = params.has("pin"), autoPinned = false, placement = "right", lastPlacementChange = 0, arCamera = null;
 let known = [];                 // fact tags the visitor reported knowing (single-artwork checklist)
 let knownArtworks = [];         // paintings the visitor already knows well (multi-artwork study)
 let artCtx = { known: [], pMoving: 0, pNoisy: 0 };   // context frozen at recognition, used by the filter
 let artworkLabel = null, recognizedAt = null, onRecognized = null;
 meta.exposure = [];             // which segment was shown, in which format (for exposure-based recall)
 let load = new LoadEstimator();  // behavioural cognitive-load estimate, one per session
+let captions = false, liked = false, fontScale = 1;
+try { fontScale = Math.min(1.6, Math.max(0.8, +localStorage.getItem("ca-fs") || 1)); } catch {}
 let segShownAt = null;
 
 // ---------------------------------------------------------------- content player
@@ -107,7 +112,7 @@ function recognize() {
   const pn = obs.noise_or_missing == null ? C.P_NOISY_UNKNOWN : pNoisy(C, obs.noise_or_missing);
   const knownHere = knownArtworks.includes(art.id) ? art.detail.filter((d) => d.priority !== 1).map((d) => d.tag) : [];
   artCtx = { known: [...known, ...knownHere], pMoving: obs.optional_sensor_features.p_moving, pNoisy: pn };
-  load.newArtwork();
+  load.newArtwork(); liked = false;
   const d = session.recognize(obs);
   if (d) { load.context({ pMoving: artCtx.pMoving, pNoisy: pn, audio: d.action?.endsWith("audio") }); d.load_terms = load.terms(); }
   if (d) d.compute_ms = +(performance.now() - tStart).toFixed(2);   // policy only, independent of rendering
@@ -173,9 +178,14 @@ function render() {
   } else if (player.action) {
     const seg = segs[player.idx];
     $("#pSeg").textContent = `${player.idx + 1}/${segs.length}${seg.optional ? " · optional detail" : ""}`;
-    $("#pText").textContent = player.isAudio() ? `🔊 ${seg.text}` : seg.text;   // caption = transcript
+    $("#pText").textContent = seg.text;          // with audio: hidden unless the transcript is on
   }
   const seg = segs[player.idx];
+  $("#pSeg").textContent += player.isAudio() && !player.finished ? " · 🔊 listening" : "";
+  $("#bCap").classList.toggle("hidden", !player.isAudio());
+  $("#bCap").setAttribute("aria-pressed", String(captions));
+  el.classList.toggle("captions", captions);
+  $("#bLike").setAttribute("aria-pressed", String(liked));
   $("#bNext").classList.toggle("hidden", player.finished || player.isAudio());
   $("#bSkip").classList.toggle("hidden", player.finished || !player.action?.startsWith("detailed") || !seg?.optional);
   $("#bMore").classList.toggle("hidden", !player.action?.startsWith("brief"));
@@ -188,11 +198,42 @@ function render() {
   placePanel();
 }
 
+// Panel centre for each candidate position, in anchor units (artwork width = 1000).
+function candidateCentres(H, ph) {
+  const g = 50;
+  return { right: [500 + g + 320, H / 2 - ph / 2], left: [-(500 + g + 320), H / 2 - ph / 2], below: [0, -(H / 2 + g + ph / 2)],
+    above: [0, H / 2 + g + ph / 2], "over-bottom": [0, -H / 2 + ph / 2 + 20] };
+}
+function projectRect(cx, cy, w, h) {
+  const xs = [], ys = [];
+  for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+    const v = new Vector3(cx + dx * w / 2, cy + dy * h / 2, 0).applyMatrix4(anchorRef.group.matrixWorld).project(arCamera);
+    xs.push((v.x + 1) / 2 * innerWidth); ys.push((1 - v.y) / 2 * innerHeight);
+  }
+  return { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+}
+// Placement optimisation (src/placement.js), twice a second while the painting is tracked.
+function updatePlacement() {
+  if (!arCamera || !tracking || userPinned || side !== "auto" || !anchorRef?.group || !player.action) return;
+  if (performance.now() - lastPlacementChange < 1500) return;
+  try {
+    const H = 1000 * targetAspect, ph = Math.max(200, $("#panel").offsetHeight || 400);
+    const cands = Object.entries(candidateCentres(H, ph)).map(([name, [x, y]]) => ({ name, rect: projectRect(x, y, 640, ph) }));
+    const r = choosePlacement(cands, projectRect(0, 0, 1000, H), { x: 0, y: 0, w: innerWidth, h: innerHeight }, autoPinned ? "pinned" : placement);
+    const next = r.choice;
+    if (next === (autoPinned ? "pinned" : placement)) return;
+    lastPlacementChange = performance.now();
+    meta.events.push({ t: now(), e: "placement", from: autoPinned ? "pinned" : placement, to: next, reason: r.reason });
+    if (next === "pinned") { autoPinned = true; setPinned(true); }
+    else { placement = next; if (autoPinned) { autoPinned = false; setPinned(false); } else placePanel(); }
+  } catch (e) { /* projection not ready yet */ }
+}
+
 function placePanel() {
   if (!panelObj || pinned) return;
-  const el = $("#panel"), H = 1000 * targetAspect, gap = 50;
-  if (side === "right") panelObj.position.set(500 + gap + 320, H / 2 - el.offsetHeight / 2, 0);
-  else panelObj.position.set(0, -(H / 2 + gap + el.offsetHeight / 2), 0);
+  const el = $("#panel"), H = 1000 * targetAspect;
+  const [x, y] = candidateCentres(H, el.offsetHeight)[side === "auto" ? placement : side] || candidateCentres(H, el.offsetHeight).right;
+  panelObj.position.set(x, y, 0);
 }
 
 function setPinned(v) {
@@ -366,11 +407,13 @@ async function initSensors() {
     return;
   }
 
-  if (!params.has("anchor") && targetAspect > 1.25 && innerHeight > innerWidth) { pinned = true; meta.events.push({ t: now(), e: "panel_pinned_tall_artwork" }); }
+  // Placement is now optimised at run time (updatePlacement); ?pin=1 pins the panel instead.
   busy("Starting camera…");
   const mindar = new MindARThree({ container: $("#ar"), imageTargetSrc: src, uiLoading: "no", uiScanning: "no",
     filterMinCF: 0.0001, filterBeta: 0.001 });
   const { renderer, cssRenderer, scene, cssScene, camera } = mindar;
+  arCamera = camera;
+  setInterval(updatePlacement, 500);
   const tCam = performance.now();
   anchors = content.artworks.map((a, i) => {
     const an = mindar.addCSSAnchor(i);
@@ -395,6 +438,7 @@ async function initSensors() {
 function tick() {
   const lvl = noise.level();
   metrics.push({ t: now(), fps: frames, noise_db: lvl == null ? null : +lvl.toFixed(1), tracking, format: player.action,
+    artwork: session?.artwork ?? null, audio_playing: !!(player.isAudio() && !player.finished), captions,
     p_moving: motion.available ? +motion.pMoving().toFixed(3) : null });
   if (session && tracking && trackedSince && !dwellSent && player.action?.startsWith("brief")
       && (performance.now() - trackedSince) / 1000 > DWELL_LONG_S) { session.event("dwell_long", now()); dwellSent = true; }
@@ -436,8 +480,8 @@ function bindSettings() {
   $("#hist").onchange = (e) => { session.useHistory = e.target.checked; meta.events.push({ t: now(), e: "use_history", v: e.target.checked }); updateHud(); };
   $("#forceNoisy").onchange = (e) => { forceNoisy = e.target.checked; meta.events.push({ t: now(), e: "force_noisy", v: forceNoisy }); updateHud(); };
   $("#pin").checked = pinned;
-  $("#pin").onchange = (e) => setPinned(e.target.checked);
-  $("#side").onchange = (e) => { side = e.target.value; placePanel(); };
+  $("#pin").onchange = (e) => { userPinned = e.target.checked; autoPinned = false; setPinned(e.target.checked); };
+  $("#side").onchange = (e) => { side = e.target.value; if (!userPinned && autoPinned) { autoPinned = false; setPinned(false); } placePanel(); };
   $("#bMind").onclick = () => { if (!mindData) return; const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([mindData])); a.download = "artwork.mind"; a.click(); };
   $("#buildInfo").textContent = `Build ${BUILD}. Noise level is an uncalibrated estimate (dBFS + offset), not dBA.`;
@@ -451,6 +495,16 @@ $("#startBtn").onclick = (ev) => {
 document.querySelectorAll("[data-act]").forEach((b) => (b.onclick = () => onControl(b.dataset.act)));
 document.querySelectorAll("[data-ov]").forEach((b) => (b.onclick = () => onOverride(b.dataset.ov)));
 $("#bExport").onclick = exportLog;
+// Transcript while listening (WCAG) is also weak evidence for preferring text; "Interesting" is
+// explicit evidence of interest in detail (PEACH-style feedback). Text size follows WCAG 1.4.4.
+$("#bCap").onclick = () => { captions = !captions; meta.events.push({ t: now(), e: captions ? "transcript_on" : "transcript_off" });
+  if (captions && session) session.event("transcript_on", now()); render(); };
+$("#bLike").onclick = () => { if (liked || !session) return; liked = true; session.event("like", now()); meta.events.push({ t: now(), e: "like", artwork: art.id }); render(); };
+const setFont = (f) => { fontScale = Math.min(1.6, Math.max(0.8, +f.toFixed(2))); $("#panel").style.setProperty("--fs", fontScale);
+  try { localStorage.setItem("ca-fs", fontScale); } catch {} meta.events.push({ t: now(), e: "font_scale", v: fontScale }); };
+$("#bSmaller").onclick = () => setFont(fontScale - 0.15);
+$("#bLarger").onclick = () => setFont(fontScale + 0.15);
+$("#panel").style.setProperty("--fs", fontScale);
 $("#bSettings").onclick = () => $("#settings").classList.remove("hidden");
 $("#bClose").onclick = () => $("#settings").classList.add("hidden");
 $("#hToggle").onclick = (e) => { const body = $("#hBody"); body.classList.toggle("hidden"); e.target.textContent = body.classList.contains("hidden") ? "▸" : "▾"; };
@@ -503,7 +557,7 @@ if (STUDY) {
     finishArtwork() {
       if (session && player.action?.startsWith("detailed") && !player.finished) session.event("left_early", now());
       player.stop(); player.action = null; $("#panel").classList.add("hidden");
-      const t = { recognized_t: recognizedAt, done_t: now(), p_load_end: +load.pHigh().toFixed(3), load_terms: load.terms() };
+      const t = { recognized_t: recognizedAt, done_t: now(), p_load_end: +load.pHigh().toFixed(3), load_terms: load.terms(), load_features: load.features() };
       artworkLabel = null; onRecognized = null; pendingRecognition = false; recognizedAt = null; expectedArtId = null; onWrongArtwork = null;
       return t;
     },

@@ -7,7 +7,7 @@
 // Usage: node tools/modularity.mjs [--md out.md]
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 
-const LAYER = { "noise.js": 1, "motion.js": 1, "policy.js": 2, "policy-bayes.js": 2, "policy-fixed.js": 2, "filter.js": 2, "study.js": 2, "load.js": 2, "app.js": 3, "study-ui.js": 3 };
+const LAYER = { "noise.js": 1, "motion.js": 1, "policy.js": 2, "policy-bayes.js": 2, "policy-fixed.js": 2, "filter.js": 2, "study.js": 2, "load.js": 2, "placement.js": 2, "fit.js": 2, "app.js": 3, "study-ui.js": 3, "calibration-ui.js": 3 };
 const NAME = { 1: "sensing", 2: "model", 3: "interaction" };
 const files = readdirSync("src").filter((f) => f.endsWith(".js"));
 const rows = [], problems = [];

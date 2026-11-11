@@ -1,5 +1,5 @@
 {
-  "_note": "Feasibility-demo content. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Each segment lists its source; checked 11 Nov 2026 against Wikipedia (which cites Aslan 2014 and Eldem 2012) and the Pera Museum / Google Arts & Culture pages. Before the study, check the printed sources directly. Optional segments carry a tag (used to filter facts the visitor already knows) and a priority (1 = kept first when detail is shortened).",
+  "_note": "Feasibility-demo content. Brief = core segments only; detailed = core + optional segments. Core facts are identical across all four formats (QR2). Each segment lists its source; checked 11 Nov 2026 against Wikipedia (which cites Aslan 2014 and Eldem 2012) and the Pera Museum / Google Arts & Culture pages. Before the study, check the printed sources directly. Optional segments carry a tag (used to filter facts the visitor already knows) and a priority (1 = kept first when detail is shortened). Recall items: core and optional test retention; 'transfer' items test applying the content (Mayer 2009).",
   "lang": "en-US",
   "artworks": [
     {
@@ -116,6 +116,33 @@
           "keywords": [
             [
               "pera"
+            ]
+          ]
+        },
+        {
+          "id": "q6",
+          "covers": "d2",
+          "type": "transfer",
+          "q": "Why might a viewer read a man patiently training very slow tortoises as a comment on his time?",
+          "a": "it can be read as satire on slow, ineffective reform (change that does not move)",
+          "keywords": [
+            [
+              "slow",
+              "yavas",
+              "yavaş",
+              "progress",
+              "ilerle"
+            ],
+            [
+              "reform",
+              "change",
+              "modern",
+              "degis",
+              "değiş",
+              "yenilik",
+              "government",
+              "state",
+              "devlet"
             ]
           ]
         }

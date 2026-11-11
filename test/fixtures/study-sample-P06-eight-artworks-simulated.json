@@ -1,0 +1,1265 @@
+{
+ "kind": "ca-guide-study-session",
+ "build": "spike-2026-11-11c",
+ "study": {
+  "started_at": "2026-11-11T13:23:16.475Z",
+  "blocks": [
+   {
+    "system": "fixed",
+    "room": "quiet",
+    "guide": "Guide A",
+    "artworks": [
+     {
+      "label": "E5-p1",
+      "first_format": "detailed_audio",
+      "recognized_t": 62.205,
+      "done_t": 62.36,
+      "interaction_s": 0.16,
+      "p_load_end": 0.664,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.2,
+       "stepdown": 0.9,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.18
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 2,
+       "stepdown": 1,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.3
+      }
+     },
+     {
+      "label": "E6-p1",
+      "first_format": "detailed_audio",
+      "recognized_t": 62.424,
+      "done_t": 62.576,
+      "interaction_s": 0.15,
+      "p_load_end": 0.874,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.92,
+       "stepdown": 1.4400000000000002,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.18
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 3.2,
+       "stepdown": 1.6,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.3
+      }
+     }
+    ],
+    "started_t": 62.173,
+    "tlx": {
+     "mental": 75,
+     "physical": 10,
+     "temporal": 75,
+     "performance": 75,
+     "effort": 75,
+     "frustration": 75
+    },
+    "raw_tlx": 64.2,
+    "tlx_mental_demand": 75,
+    "paas": 7,
+    "ended_t": 62.65
+   },
+   {
+    "system": "fixed",
+    "room": "noise",
+    "guide": "Guide A",
+    "artworks": [
+     {
+      "label": "E7-p2",
+      "first_format": "detailed_audio",
+      "recognized_t": 62.652,
+      "done_t": 62.741,
+      "interaction_s": 0.09,
+      "p_load_end": 0.645,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.152,
+       "stepdown": 0.864,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.18
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 1.92,
+       "stepdown": 0.96,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.3
+      }
+     },
+     {
+      "label": "E8-p2",
+      "first_format": "detailed_audio",
+      "recognized_t": 62.803,
+      "done_t": 62.891,
+      "interaction_s": 0.09,
+      "p_load_end": 0.448,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 0.6911999999999999,
+       "stepdown": 0.5184,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.18
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 1.152,
+       "stepdown": 0.576,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0.3
+      }
+     }
+    ],
+    "started_t": 62.651,
+    "tlx": {
+     "mental": 25,
+     "physical": 5,
+     "temporal": 25,
+     "performance": 25,
+     "effort": 25,
+     "frustration": 25
+    },
+    "raw_tlx": 21.7,
+    "tlx_mental_demand": 25,
+    "paas": 3,
+    "ended_t": 62.962
+   },
+   {
+    "system": "adaptive",
+    "room": "quiet",
+    "guide": "Guide B",
+    "artworks": [
+     {
+      "label": "E1-p3",
+      "first_format": "brief_text",
+      "recognized_t": 62.969,
+      "done_t": 63.116,
+      "interaction_s": 0.15,
+      "p_load_end": 0.401,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.2,
+       "stepdown": 0,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 2,
+       "stepdown": 0,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      }
+     },
+     {
+      "label": "E2-p3",
+      "first_format": "detailed_text",
+      "recognized_t": 63.185,
+      "done_t": 63.332,
+      "interaction_s": 0.15,
+      "p_load_end": 0.772,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.92,
+       "stepdown": 0.9,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 3.2,
+       "stepdown": 1,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      }
+     }
+    ],
+    "started_t": 62.967,
+    "tlx": {
+     "mental": 75,
+     "physical": 10,
+     "temporal": 75,
+     "performance": 75,
+     "effort": 75,
+     "frustration": 75
+    },
+    "raw_tlx": 64.2,
+    "tlx_mental_demand": 75,
+    "paas": 7,
+    "ended_t": 63.403
+   },
+   {
+    "system": "adaptive",
+    "room": "noise",
+    "guide": "Guide B",
+    "artworks": [
+     {
+      "label": "E3-p4",
+      "first_format": "brief_text",
+      "recognized_t": 63.404,
+      "done_t": 63.484,
+      "interaction_s": 0.08,
+      "p_load_end": 0.523,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 1.152,
+       "stepdown": 0.54,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 1.92,
+       "stepdown": 0.6,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      }
+     },
+     {
+      "label": "E4-p4",
+      "first_format": "brief_text",
+      "recognized_t": 63.553,
+      "done_t": 63.643,
+      "interaction_s": 0.09,
+      "p_load_end": 0.358,
+      "load_terms": {
+       "prior": -1.6,
+       "pace": 0,
+       "replay": 0.6911999999999999,
+       "stepdown": 0.324,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      },
+      "load_features": {
+       "pace": 0,
+       "replay": 1.152,
+       "stepdown": 0.36,
+       "hesitate": 0,
+       "walking": 0,
+       "noise_audio": 0
+      }
+     }
+    ],
+    "started_t": 63.403,
+    "tlx": {
+     "mental": 25,
+     "physical": 5,
+     "temporal": 25,
+     "performance": 25,
+     "effort": 25,
+     "frustration": 25
+    },
+    "raw_tlx": 21.7,
+    "tlx_mental_demand": 25,
+    "paas": 3,
+    "ended_t": 63.712
+   }
+  ],
+  "sus": {
+   "fixed": {
+    "answers": [
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2
+    ],
+    "score": 75,
+    "guide": "Guide A"
+   },
+   "adaptive": {
+    "answers": [
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2,
+     4,
+     2
+    ],
+    "score": 75,
+    "guide": "Guide B"
+   }
+  },
+  "recall": [
+   {
+    "id": "alpha-core",
+    "artwork": "E1",
+    "covers": "c1",
+    "type": "core",
+    "answer": "a harbour",
+    "correct_auto": true
+   },
+   {
+    "id": "alpha-transfer",
+    "artwork": "E1",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "no idea",
+    "correct_auto": false
+   },
+   {
+    "id": "bravo-core",
+    "artwork": "E2",
+    "covers": "c1",
+    "type": "core",
+    "answer": "boats",
+    "correct_auto": false
+   },
+   {
+    "id": "bravo-transfer",
+    "artwork": "E2",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "finished in an evening",
+    "correct_auto": true
+   },
+   {
+    "id": "charlie-core",
+    "artwork": "E3",
+    "covers": "c1",
+    "type": "core",
+    "answer": "a harbour",
+    "correct_auto": true
+   },
+   {
+    "id": "charlie-transfer",
+    "artwork": "E3",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "no idea",
+    "correct_auto": false
+   },
+   {
+    "id": "delta-core",
+    "artwork": "E4",
+    "covers": "c1",
+    "type": "core",
+    "answer": "boats",
+    "correct_auto": false
+   },
+   {
+    "id": "delta-transfer",
+    "artwork": "E4",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "no idea",
+    "correct_auto": false
+   },
+   {
+    "id": "echo-core",
+    "artwork": "E5",
+    "covers": "c1",
+    "type": "core",
+    "answer": "a harbour",
+    "correct_auto": true
+   },
+   {
+    "id": "echo-transfer",
+    "artwork": "E5",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "finished in an evening",
+    "correct_auto": true
+   },
+   {
+    "id": "foxtrot-core",
+    "artwork": "E6",
+    "covers": "c1",
+    "type": "core",
+    "answer": "boats",
+    "correct_auto": false
+   },
+   {
+    "id": "foxtrot-transfer",
+    "artwork": "E6",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "no idea",
+    "correct_auto": false
+   },
+   {
+    "id": "golf-core",
+    "artwork": "E7",
+    "covers": "c1",
+    "type": "core",
+    "answer": "a harbour",
+    "correct_auto": true
+   },
+   {
+    "id": "golf-transfer",
+    "artwork": "E7",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "no idea",
+    "correct_auto": false
+   },
+   {
+    "id": "hotel-core",
+    "artwork": "E8",
+    "covers": "c1",
+    "type": "core",
+    "answer": "boats",
+    "correct_auto": false
+   },
+   {
+    "id": "hotel-transfer",
+    "artwork": "E8",
+    "covers": "d1",
+    "type": "transfer",
+    "answer": "finished in an evening",
+    "correct_auto": true
+   }
+  ],
+  "adaptive_prior_mode": "practice",
+  "consent": {
+   "given": true,
+   "t": 0.055,
+   "at": "2026-11-11T13:23:16.501Z"
+  },
+  "participant": {
+   "number": 6,
+   "familiarity": 4,
+   "accessibility": [],
+   "known": [],
+   "known_artworks": [],
+   "format_preference": "detailed_audio"
+  },
+  "schedule": [
+   {
+    "system": "fixed",
+    "room": "quiet",
+    "guide": "Guide A",
+    "artworks": [
+     "E5",
+     "E6"
+    ]
+   },
+   {
+    "system": "fixed",
+    "room": "noise",
+    "guide": "Guide A",
+    "artworks": [
+     "E7",
+     "E8"
+    ]
+   },
+   {
+    "system": "adaptive",
+    "room": "quiet",
+    "guide": "Guide B",
+    "artworks": [
+     "E1",
+     "E2"
+    ]
+   },
+   {
+    "system": "adaptive",
+    "room": "noise",
+    "guide": "Guide B",
+    "artworks": [
+     "E3",
+     "E4"
+    ]
+   }
+  ],
+  "practice_trials": [
+   {
+    "format": "detailed_text",
+    "seconds": 0.41,
+    "ratio": 0.04,
+    "completed": false
+   },
+   {
+    "format": "brief_audio",
+    "seconds": 0.31,
+    "ratio": 0.07,
+    "completed": false
+   }
+  ],
+  "practice_prior": {
+   "a_d": 0,
+   "b_d": 0.75,
+   "a_a": 0.25,
+   "b_a": 0.75,
+   "evidence": [
+    "b_d+0.75: left detailed_text early",
+    "a_a+0.25: left detailed_text quickly",
+    "b_a+0.75: stopped brief_audio early"
+   ]
+  },
+  "calibration": [
+   {
+    "condition": "0-back",
+    "label": 0,
+    "features": {
+     "pace": 0,
+     "replay": 0,
+     "stepdown": 0,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "pace": [
+     0.39,
+     0.42,
+     0.38
+    ],
+    "nback": {
+     "digits": 3,
+     "targets": 0,
+     "hits": 0,
+     "misses": 0,
+     "false_alarms": 3
+    },
+    "paas": 3,
+    "t": 16.134
+   },
+   {
+    "condition": "2-back",
+    "label": 1,
+    "features": {
+     "pace": 2.387,
+     "replay": 0,
+     "stepdown": 0,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "pace": [
+     1.73,
+     1.92,
+     1.74
+    ],
+    "nback": {
+     "digits": 13,
+     "targets": 6,
+     "hits": 0,
+     "misses": 6,
+     "false_alarms": 0
+    },
+    "paas": 7,
+    "t": 49.349
+   }
+  ]
+ },
+ "decision_logs": {
+  "fixed": [
+   {
+    "timestamp": 62.204,
+    "artwork_id": "E5-p1",
+    "action": "detailed_audio",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "detailed",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0,
+     "stepdown": 0,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0.18
+    },
+    "compute_ms": 0.4,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 62.206,
+    "artwork_id": "E5-p1",
+    "event": "transcript_on"
+   },
+   {
+    "timestamp": 62.207,
+    "artwork_id": "E5-p1",
+    "event": "like"
+   },
+   {
+    "timestamp": 62.207,
+    "artwork_id": "E5-p1",
+    "event": "replay"
+   },
+   {
+    "timestamp": 62.238,
+    "artwork_id": "E5-p1",
+    "event": "replay"
+   },
+   {
+    "timestamp": 62.27,
+    "artwork_id": "E5-p1",
+    "action": "brief_audio",
+    "keep_or_switch": "override",
+    "utility_by_action": {},
+    "reason": "manual override by user",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "brief",
+    "quality_flags": []
+   },
+   {
+    "timestamp": 62.423,
+    "artwork_id": "E6-p1",
+    "action": "detailed_audio",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "detailed",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0.72,
+     "stepdown": 0.54,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0.18
+    },
+    "compute_ms": 0.2,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 62.425,
+    "artwork_id": "E6-p1",
+    "event": "replay"
+   },
+   {
+    "timestamp": 62.456,
+    "artwork_id": "E6-p1",
+    "event": "replay"
+   },
+   {
+    "timestamp": 62.487,
+    "artwork_id": "E6-p1",
+    "action": "brief_audio",
+    "keep_or_switch": "override",
+    "utility_by_action": {},
+    "reason": "manual override by user",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "brief",
+    "quality_flags": []
+   },
+   {
+    "timestamp": 62.651,
+    "artwork_id": "E7-p2",
+    "action": "detailed_audio",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "detailed",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 1.152,
+     "stepdown": 0.864,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0.18
+    },
+    "compute_ms": 0,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 62.741,
+    "artwork_id": "E7-p2",
+    "event": "left_early"
+   },
+   {
+    "timestamp": 62.802,
+    "artwork_id": "E8-p2",
+    "action": "detailed_audio",
+    "keep_or_switch": "initial",
+    "utility_by_action": {},
+    "reason": "fixed condition: the participant's own choice",
+    "flags": [
+     "non_adaptive"
+    ],
+    "noise_dba": null,
+    "policy": "fixed",
+    "modality": "audio",
+    "density": "detailed",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0.6911999999999999,
+     "stepdown": 0.5184,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0.18
+    },
+    "compute_ms": 0.1,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 62.891,
+    "artwork_id": "E8-p2",
+    "event": "left_early"
+   }
+  ],
+  "adaptive": [
+   {
+    "timestamp": 62.967,
+    "artwork_id": "E1-p3",
+    "action": "brief_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.4,
+     "detailed_text": 0.3853,
+     "brief_audio": 0.3454,
+     "detailed_audio": 0.3113
+    },
+    "reason": "highest expected utility (0.400); best in 33% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4211,
+     "audio_mean": 0.45
+    },
+    "p_noisy": 0.3,
+    "p_load": 0.168,
+    "confidence": 0.33,
+    "modality": "text",
+    "density": "brief",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0,
+     "stepdown": 0,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "compute_ms": 2.4,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 62.969,
+    "artwork_id": "E1-p3",
+    "event": "replay",
+    "belief": {
+     "a_d": 3,
+     "b_d": 2.75,
+     "a_a": 2.25,
+     "b_a": 2.75
+    }
+   },
+   {
+    "timestamp": 63,
+    "artwork_id": "E1-p3",
+    "event": "replay",
+    "belief": {
+     "a_d": 4,
+     "b_d": 2.75,
+     "a_a": 2.25,
+     "b_a": 2.75
+    }
+   },
+   {
+    "timestamp": 63.183,
+    "artwork_id": "E2-p3",
+    "action": "detailed_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.3814,
+     "detailed_text": 0.4682,
+     "brief_audio": 0.3256,
+     "detailed_audio": 0.4012
+    },
+    "reason": "highest expected utility (0.468); best in 33% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown",
+     "behavioural_load_estimate"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5736,
+     "audio_mean": 0.45
+    },
+    "p_noisy": 0.3,
+    "p_load": 0.401,
+    "confidence": 0.3275,
+    "modality": "text",
+    "density": "detailed",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0.72,
+     "stepdown": 0,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "compute_ms": 1.8,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 63.185,
+    "artwork_id": "E2-p3",
+    "event": "replay",
+    "belief": {
+     "a_d": 3.7,
+     "b_d": 2.75,
+     "a_a": 2.25,
+     "b_a": 2.75
+    }
+   },
+   {
+    "timestamp": 63.216,
+    "artwork_id": "E2-p3",
+    "event": "replay",
+    "belief": {
+     "a_d": 3.7,
+     "b_d": 2.75,
+     "a_a": 2.25,
+     "b_a": 2.75
+    }
+   },
+   {
+    "timestamp": 63.247,
+    "artwork_id": "E2-p3",
+    "action": "brief_text",
+    "keep_or_switch": "override",
+    "utility_by_action": {},
+    "reason": "manual override by user",
+    "flags": [],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.5736,
+     "audio_mean": 0.45
+    },
+    "p_noisy": null,
+    "p_load": null,
+    "confidence": null,
+    "modality": "text",
+    "density": "brief",
+    "quality_flags": []
+   },
+   {
+    "timestamp": 63.403,
+    "artwork_id": "E3-p4",
+    "action": "brief_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.3517,
+     "detailed_text": 0.1439,
+     "brief_audio": 0.294,
+     "detailed_audio": 0.088
+    },
+    "reason": "highest expected utility (0.352); best in 50% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown",
+     "behavioural_load_estimate"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4364,
+     "audio_mean": 0.45
+    },
+    "p_noisy": 0.3,
+    "p_load": 0.772,
+    "confidence": 0.5025,
+    "modality": "text",
+    "density": "brief",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 1.152,
+     "stepdown": 0.54,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "compute_ms": 0.6,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   },
+   {
+    "timestamp": 63.552,
+    "artwork_id": "E4-p4",
+    "action": "brief_text",
+    "keep_or_switch": "initial",
+    "utility_by_action": {
+     "brief_text": 0.3716,
+     "detailed_text": 0.2492,
+     "brief_audio": 0.3152,
+     "detailed_audio": 0.1859
+    },
+    "reason": "highest expected utility (0.372); best in 46% of posterior draws",
+    "flags": [
+     "noise_unknown",
+     "p_high_unknown",
+     "behavioural_load_estimate"
+    ],
+    "noise_dba": null,
+    "policy": "bayes",
+    "belief": {
+     "detail_mean": 0.4349,
+     "audio_mean": 0.45
+    },
+    "p_noisy": 0.3,
+    "p_load": 0.523,
+    "confidence": 0.4625,
+    "modality": "text",
+    "density": "brief",
+    "load_terms": {
+     "prior": -1.6,
+     "pace": 0,
+     "replay": 0.6911999999999999,
+     "stepdown": 0.324,
+     "hesitate": 0,
+     "walking": 0,
+     "noise_audio": 0
+    },
+    "compute_ms": 0.8,
+    "quality_flags": [
+     "noise_missing",
+     "tracking_simulated",
+     "motion_missing"
+    ],
+    "filtered": []
+   }
+  ]
+ },
+ "exposure": [
+  {
+   "t": 62.205,
+   "artwork_id": "E5-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.207,
+   "artwork_id": "E5-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.239,
+   "artwork_id": "E5-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.271,
+   "artwork_id": "E5-p1",
+   "seg": "c1",
+   "format": "brief_audio"
+  },
+  {
+   "t": 62.424,
+   "artwork_id": "E6-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.425,
+   "artwork_id": "E6-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.456,
+   "artwork_id": "E6-p1",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.487,
+   "artwork_id": "E6-p1",
+   "seg": "c1",
+   "format": "brief_audio"
+  },
+  {
+   "t": 62.652,
+   "artwork_id": "E7-p2",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.802,
+   "artwork_id": "E8-p2",
+   "seg": "c1",
+   "format": "detailed_audio"
+  },
+  {
+   "t": 62.969,
+   "artwork_id": "E1-p3",
+   "seg": "c1",
+   "format": "brief_text"
+  },
+  {
+   "t": 62.969,
+   "artwork_id": "E1-p3",
+   "seg": "c1",
+   "format": "brief_text"
+  },
+  {
+   "t": 63,
+   "artwork_id": "E1-p3",
+   "seg": "c1",
+   "format": "brief_text"
+  },
+  {
+   "t": 63.185,
+   "artwork_id": "E2-p3",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 63.185,
+   "artwork_id": "E2-p3",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 63.216,
+   "artwork_id": "E2-p3",
+   "seg": "c1",
+   "format": "detailed_text"
+  },
+  {
+   "t": 63.247,
+   "artwork_id": "E2-p3",
+   "seg": "c1",
+   "format": "brief_text"
+  },
+  {
+   "t": 63.404,
+   "artwork_id": "E3-p4",
+   "seg": "c1",
+   "format": "brief_text"
+  },
+  {
+   "t": 63.553,
+   "artwork_id": "E4-p4",
+   "seg": "c1",
+   "format": "brief_text"
+  }
+ ],
+ "events": [
+  {
+   "t": 61.78,
+   "e": "motion_unavailable"
+  },
+  {
+   "t": 62.022,
+   "e": "mic_unavailable",
+   "detail": "NotAllowedError: Permission denied"
+  },
+  {
+   "t": 62.17,
+   "e": "nocam_mode"
+  },
+  {
+   "t": 62.173,
+   "e": "block_start",
+   "block": 1,
+   "system": "fixed",
+   "room": "quiet"
+  },
+  {
+   "t": 62.204,
+   "e": "target_found",
+   "artwork": "E5"
+  },
+  {
+   "t": 62.206,
+   "e": "transcript_on"
+  },
+  {
+   "t": 62.207,
+   "e": "font_scale",
+   "v": 1.15
+  },
+  {
+   "t": 62.207,
+   "e": "like",
+   "artwork": "E5"
+  },
+  {
+   "t": 62.423,
+   "e": "target_found",
+   "artwork": "E6"
+  },
+  {
+   "t": 62.651,
+   "e": "block_start",
+   "block": 2,
+   "system": "fixed",
+   "room": "noise"
+  },
+  {
+   "t": 62.651,
+   "e": "target_found",
+   "artwork": "E7"
+  },
+  {
+   "t": 62.652,
+   "e": "transcript_off"
+  },
+  {
+   "t": 62.802,
+   "e": "target_found",
+   "artwork": "E8"
+  },
+  {
+   "t": 62.967,
+   "e": "block_start",
+   "block": 3,
+   "system": "adaptive",
+   "room": "quiet"
+  },
+  {
+   "t": 62.967,
+   "e": "target_found",
+   "artwork": "E1"
+  },
+  {
+   "t": 63.183,
+   "e": "target_found",
+   "artwork": "E2"
+  },
+  {
+   "t": 63.403,
+   "e": "block_start",
+   "block": 4,
+   "system": "adaptive",
+   "room": "noise"
+  },
+  {
+   "t": 63.403,
+   "e": "target_found",
+   "artwork": "E3"
+  },
+  {
+   "t": 63.552,
+   "e": "target_found",
+   "artwork": "E4"
+  }
+ ],
+ "metrics": [
+  {
+   "t": 63.183,
+   "fps": 1,
+   "noise_db": null,
+   "tracking": false,
+   "format": null,
+   "artwork": "E1-p3",
+   "audio_playing": false,
+   "captions": false,
+   "p_moving": null
+  }
+ ],
+ "device": {
+  "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Claude/5.1231.0 Chrome/156.0.8078.75 Safari/537.36 MSIX",
+  "screen": "0x0@1"
+ },
+ "finished_at": "2026-11-11T13:24:20.161Z"
+}

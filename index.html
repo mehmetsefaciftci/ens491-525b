@@ -55,6 +55,13 @@
     <div class="pmeta"><span id="pFormat"></span><span id="pSeg"></span></div>
     <h2 id="pTitle"></h2>
     <p id="pText"></p>
+    <!-- Audio plays without on-screen text (Mayer: redundancy); the transcript is one tap away (WCAG 1.2). -->
+    <div class="ptools">
+      <button id="bCap" class="hidden" aria-pressed="false">Transcript</button>
+      <button id="bLike" aria-pressed="false" title="Tell the guide this painting interests you">★ Interesting</button>
+      <button id="bSmaller" aria-label="Smaller text">A−</button>
+      <button id="bLarger" aria-label="Larger text">A+</button>
+    </div>
     <div class="pctrl">
       <button data-act="next" id="bNext">Next ▸</button>
       <button data-act="replay">↺ Replay</button>
@@ -103,7 +110,7 @@
     <label><input id="forceNoisy" type="checkbox" /> Simulate noisy room (flagged in log)</label>
     <label><input id="pin" type="checkbox" /> Pin panel to screen instead of next to the artwork</label>
     <label>Panel side
-      <select id="side"><option value="right">right of artwork</option><option value="below">below artwork</option></select></label>
+      <select id="side"><option value="auto" selected>automatic (optimised)</option><option value="right">right of artwork</option><option value="left">left of artwork</option><option value="below">below artwork</option><option value="above">above artwork</option><option value="over-bottom">over the lower part</option></select></label>
     <div class="hrow">
       <button id="bMind" class="small">Download compiled target (.mind)</button>
       <button id="bClose" class="primary small">Close</button>

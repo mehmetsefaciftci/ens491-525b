@@ -70,4 +70,42 @@ t("practice prior: abandoning detailed and reading brief text fully -> brief and
 t("practice prior: capped", () => {
   const many = Array.from({ length: 20 }, () => ({ format: "detailed_audio", ratio: 1, completed: true }));
   const p = practicePrior(many); assert.ok(p.a_d <= 2 && p.a_a <= 2); });
+{
+  const { choosePlacement } = await import("../src/placement.js");
+  const vp = { x: 0, y: 0, w: 390, h: 844 };                       // portrait phone
+  const tall = { x: 95, y: 120, w: 200, h: 600 };                   // tall painting in the middle
+  const cands = (artR, pw, ph, g = 10) => [
+    { name: "right", rect: { x: artR.x + artR.w + g, y: artR.y, w: pw, h: ph } },
+    { name: "left", rect: { x: artR.x - g - pw, y: artR.y, w: pw, h: ph } },
+    { name: "below", rect: { x: artR.x + artR.w / 2 - pw / 2, y: artR.y + artR.h + g, w: pw, h: ph } },
+    { name: "above", rect: { x: artR.x + artR.w / 2 - pw / 2, y: artR.y - g - ph, w: pw, h: ph } },
+    { name: "over-bottom", rect: { x: artR.x + artR.w / 2 - pw / 2, y: artR.y + artR.h - ph - g, w: pw, h: ph } } ];
+  t("placement: tall painting on a portrait screen -> panel over its lower part, still next to it", () =>
+    assert.equal(choosePlacement(cands(tall, 330, 260), tall, vp).choice, "over-bottom"));
+  t("placement: pinned when every anchored position is off screen or covers most of the painting", () => {
+    const full = { x: 0, y: 0, w: 390, h: 844 };
+    assert.equal(choosePlacement(cands(full, 380, 600), full, vp).choice, "pinned"); });
+  t("placement: small painting -> the panel goes beside it, not over it", () => {
+    const small = { x: 20, y: 300, w: 120, h: 160 };
+    const c = choosePlacement(cands(small, 220, 160), small, vp).choice; assert.ok(["right", "below"].includes(c), c); });
+  t("placement: overlay is chosen only when nothing beside fits", () => {
+    const big = { x: 10, y: 20, w: 370, h: 800 };
+    assert.equal(choosePlacement(cands(big, 300, 200), big, vp).choice, "over-bottom"); });
+  t("placement: hysteresis keeps a good current position", () => {
+    const small = { x: 135, y: 300, w: 120, h: 160 };
+    assert.equal(choosePlacement(cands(small, 220, 160), small, vp, "below").choice, "below"); });
+}
+{
+  const { fitLogistic, leaveOneSubjectOut, auc } = await import("../src/fit.js");
+  // Synthetic participants: high load -> slower reading and more replays, plus noise.
+  let seed = 7; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const samples = [];
+  for (let p = 0; p < 8; p++) for (let k = 0; k < 10; k++) { const y = k % 2;
+    samples.push({ participant: `P${p}`, y, x: [y * 0.8 + r() * 0.6, (y ? 1 : 0) * (r() < 0.6 ? 1 : 0), 0, 0, r() * 0.3, 0] }); }
+  t("fit: logistic regression learns positive weights for pace and replays", () => {
+    const m = fitLogistic(samples.map((s) => s.x), samples.map((s) => s.y)); assert.ok(m.w[0] > 0 && m.w[1] > 0, JSON.stringify(m)); });
+  t("fit: leave-one-subject-out generalises to unseen participants", () => {
+    const res = leaveOneSubjectOut(samples); assert.ok(res.auc > 0.8 && res.balanced_accuracy > 0.7, JSON.stringify(res)); });
+  t("fit: AUC is 0.5 for uninformative scores", () => assert.equal(auc([0, 1, 0, 1], [0.5, 0.5, 0.5, 0.5]), 0.5));
+}
 console.log(`\n${n} unit tests pass.`);

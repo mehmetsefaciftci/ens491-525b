@@ -1,0 +1,535 @@
+{
+  "_note": "TEST CONTENT: eight synthetic paintings (two images reused) to test the study flow and analysis. Not for participants and not for camera use.",
+  "lang": "en-US",
+  "targets_mind": "targets/test-two.mind",
+  "artworks": [
+    {
+      "id": "E1",
+      "target": "targets/artwork.jpg",
+      "title": "Test painting Alpha",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting alpha shows a alpha harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The alpha boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The alpha picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The alpha frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "alpha-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting alpha show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "alpha-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting alpha look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E2",
+      "target": "targets/placeholder.jpg",
+      "title": "Test painting Bravo",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting bravo shows a bravo harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The bravo boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The bravo picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The bravo frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "bravo-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting bravo show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "bravo-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting bravo look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E3",
+      "target": "targets/artwork.jpg",
+      "title": "Test painting Charlie",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting charlie shows a charlie harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The charlie boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The charlie picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The charlie frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "charlie-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting charlie show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "charlie-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting charlie look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E4",
+      "target": "targets/placeholder.jpg",
+      "title": "Test painting Delta",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting delta shows a delta harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The delta boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The delta picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The delta frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "delta-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting delta show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "delta-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting delta look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E5",
+      "target": "targets/artwork.jpg",
+      "title": "Test painting Echo",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting echo shows a echo harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The echo boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The echo picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The echo frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "echo-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting echo show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "echo-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting echo look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E6",
+      "target": "targets/placeholder.jpg",
+      "title": "Test painting Foxtrot",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting foxtrot shows a foxtrot harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The foxtrot boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The foxtrot picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The foxtrot frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "foxtrot-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting foxtrot show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "foxtrot-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting foxtrot look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E7",
+      "target": "targets/artwork.jpg",
+      "title": "Test painting Golf",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting golf shows a golf harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The golf boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The golf picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The golf frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "golf-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting golf show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "golf-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting golf look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    },
+    {
+      "id": "E8",
+      "target": "targets/placeholder.jpg",
+      "title": "Test painting Hotel",
+      "artist": "test",
+      "year": "2026",
+      "status": "test only",
+      "core": [
+        {
+          "id": "c1",
+          "text": "Test painting hotel shows a hotel harbour at sunset in calm weather."
+        },
+        {
+          "id": "c2",
+          "text": "The hotel boats in front are small fishing boats."
+        }
+      ],
+      "detail": [
+        {
+          "id": "d1",
+          "optional": true,
+          "text": "The hotel picture was finished in one evening.",
+          "tag": "making",
+          "priority": 1
+        },
+        {
+          "id": "d2",
+          "optional": true,
+          "text": "The hotel frame is original.",
+          "tag": "frame",
+          "priority": 2
+        }
+      ],
+      "recall": [
+        {
+          "id": "hotel-core",
+          "covers": "c1",
+          "type": "core",
+          "q": "What does test painting hotel show?",
+          "a": "a harbour",
+          "keywords": [
+            [
+              "harbour",
+              "harbor",
+              "liman"
+            ]
+          ]
+        },
+        {
+          "id": "hotel-transfer",
+          "covers": "d1",
+          "type": "transfer",
+          "q": "Why might painting hotel look spontaneous?",
+          "a": "finished in one evening",
+          "keywords": [
+            [
+              "evening",
+              "quick",
+              "fast",
+              "aksam"
+            ]
+          ]
+        }
+      ],
+      "prior_knowledge": []
+    }
+  ]
+}

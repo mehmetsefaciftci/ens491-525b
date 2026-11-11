@@ -21,6 +21,7 @@ const baseId = (label) => label.replace(/#\d+.*$/, "").replace(/-p\d+$/, "");
 const rows = [];                       // long format
 const perP = [];
 const loadPairs = [];                  // (mean behavioural P(high load) in a block, TLX, Paas)
+const effBlocks = [];                  // per block: recall share (performance) and Paas (effort) for the efficiency measure
 const rank = (a) => { const s = a.map((v, i) => [v, i]).sort((x, y) => x[0] - y[0]); const r = Array(a.length);
   for (let i = 0; i < s.length;) { let j = i; while (j + 1 < s.length && s[j + 1][0] === s[i][0]) j++; for (let k = i; k <= j; k++) r[s[k][1]] = (i + j) / 2 + 1; i = j + 1; } return r; };
 const spearman = (x, y) => { if (x.length < 3) return null; const rx = rank(x), ry = rank(y), mx = mean(rx), my = mean(ry);
@@ -40,6 +41,11 @@ for (const f of files) {
     const pl = ends.length ? mean(ends) : null;
     if (pl != null) { add("behavioural_load_mean", +pl.toFixed(3), b.system, b.room); loadPairs.push({ pl, tlx: b.tlx_mental_demand, paas: b.paas }); }
     add("tlx_mental_demand", b.tlx_mental_demand, b.system, b.room);
+    if (b.raw_tlx != null) add("raw_tlx", b.raw_tlx, b.system, b.room);
+    // Visual attention proxy (He & Wu 2023 used eye tracking): share of listening seconds in which
+    // the camera still had the painting in view.
+    const listen = j.metrics.filter((m) => m.audio_playing && m.t >= b.started_t && m.t <= (b.ended_t ?? Infinity));
+    if (listen.length) add("artwork_in_view_while_listening", +(listen.filter((m) => m.tracking).length / listen.length).toFixed(3), b.system, b.room);
     add("paas_effort", b.paas, b.system, b.room);
     for (const a of b.artworks) add("interaction_time_s", a.interaction_s, b.system, b.room);
   }
@@ -55,8 +61,17 @@ for (const f of files) {
     const conds = condOf[r.artwork] || new Set();
     const [system, room] = conds.size === 1 ? [...conds][0].split("|") : ["multiple", ""];
     if (r.type === "core") { rec.core.push(r.correct_auto); add("recall_core_correct", r.correct_auto ? 1 : 0, system, room); }
+    else if (r.type === "transfer") { if (exposed.has(r.covers)) add("transfer_correct_exposed", r.correct_auto ? 1 : 0, system, room); }
     else if (exposed.has(r.covers)) { rec.optional.push(r.correct_auto); add("recall_optional_correct_exposed", r.correct_auto ? 1 : 0, system, room); }
     else rec.optional_not_exposed++;
+  }
+
+  // Efficiency (Paas & van Merrienboer 1993): E = (z performance - z effort) / sqrt(2), per block.
+  // Performance = share of core and transfer items correct for the paintings shown in that block.
+  for (const b of S.blocks) {
+    const ids = new Set(b.artworks.map((a) => baseId(a.label)));
+    const items = S.recall.filter((r) => (r.type === "core" || r.type === "transfer") && ids.has(r.artwork) && condOf[r.artwork]?.size === 1);
+    if (items.length && b.paas != null) effBlocks.push({ P, system: b.system, room: b.room, perf: mean(items.map((r) => (r.correct_auto ? 1 : 0))), effort: b.paas });
   }
 
   // Algorithm measures per system.
@@ -77,6 +92,13 @@ for (const f of files) {
   perP.push({ P, file: f, simulated: sim, participant: S.participant, schedule: S.schedule, rec, alg, sus: S.sus });
 }
 
+// Efficiency z-scores over all blocks of all participants.
+if (effBlocks.length >= 2) {
+  const z = (a) => { const m = mean(a), sd = Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1)) || 1; return a.map((v) => (v - m) / sd); };
+  const zp = z(effBlocks.map((e) => e.perf)), ze = z(effBlocks.map((e) => e.effort));
+  effBlocks.forEach((e, i) => rows.push({ participant: e.P, system: e.system, room: e.room, measure: "efficiency_E", value: +((zp[i] - ze[i]) / Math.SQRT2).toFixed(3) }));
+}
+
 // ---------------------------------------------------------------- outputs
 const cell = (m, sys, room) => { const v = rows.filter((r) => r.measure === m && r.system === sys && (room == null || r.room === room)).map((r) => +r.value); return v.length ? mean(v) : null; };
 const f1 = (v, d = 1) => (v == null ? "–" : (+v).toFixed(d));
@@ -85,12 +107,14 @@ const lines = [
   `${perP.length} session file(s): ${perP.map((p) => `${p.P}${p.simulated ? " (simulated input)" : ""}`).join(", ")}.`, "",
   "## Project criteria by condition (means)", "",
   "| Measure | Adaptive, quiet | Adaptive, noise | Fixed, quiet | Fixed, noise |", "|---|---|---|---|---|",
-  ...[["Interaction time per artwork (s)", "interaction_time_s"], ["Raw NASA-TLX mental demand (0–100)", "tlx_mental_demand"], ["Paas effort (1–9)", "paas_effort"]]
+  ...[["Interaction time per artwork (s)", "interaction_time_s"], ["Raw NASA-TLX, mean of 6 subscales (0–100)", "raw_tlx"], ["NASA-TLX mental demand (0–100)", "tlx_mental_demand"], ["Paas effort (1–9)", "paas_effort"],
+      ["Efficiency E (Paas & van Merriënboer)", "efficiency_E"], ["Painting in view while listening (share)", "artwork_in_view_while_listening"]]
     .map(([n, m]) => `| ${n} | ${f1(cell(m, "adaptive", "quiet"))} | ${f1(cell(m, "adaptive", "noise"))} | ${f1(cell(m, "fixed", "quiet"))} | ${f1(cell(m, "fixed", "noise"))} |`),
   "", "| Measure | Adaptive | Fixed |", "|---|---|---|",
   `| SUS (0–100) | ${f1(cell("sus", "adaptive", null))} | ${f1(cell("sus", "fixed", null))} |`,
   `| Core recall (share correct) | ${f1(cell("recall_core_correct", "adaptive", null), 2)} | ${f1(cell("recall_core_correct", "fixed", null), 2)} |`,
   `| Optional recall, exposed facts only | ${f1(cell("recall_optional_correct_exposed", "adaptive", null), 2)} | ${f1(cell("recall_optional_correct_exposed", "fixed", null), 2)} |`,
+  `| Transfer, exposed facts only | ${f1(cell("transfer_correct_exposed", "adaptive", null), 2)} | ${f1(cell("transfer_correct_exposed", "fixed", null), 2)} |`,
   `| Manual overrides per session | ${f1(cell("overrides", "adaptive", null))} | ${f1(cell("overrides", "fixed", null))} |`,
   "", "## Algorithm measures per session", "",
   "| Participant | System | Decisions | Auto switches | Overrides | Policy compute median / max (ms) | Shown on screen median / max (ms) | Explained decisions | Facts filtered |", "|---|---|---|---|---|---|---|---|---|",

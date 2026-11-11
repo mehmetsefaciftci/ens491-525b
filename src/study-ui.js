@@ -4,8 +4,18 @@
 // The participant sees the systems as "Guide A" and "Guide B"; the condition names stay in the log.
 import { blockOrder, assignArtworks, SUS_ITEMS, susScore, scoreRecall, practicePrior } from "./study.js";
 import { words } from "./load.js";
+import { runCalibration } from "./calibration-ui.js";
 
 const PER_BLOCK = 2;
+// Raw NASA-TLX (Hart 2006): six subscales, 0-100 in steps of 5, unweighted mean.
+const TLX = [
+  ["mental", "Mental demand", "How mentally demanding was this part?", "very low", "very high"],
+  ["physical", "Physical demand", "How physically demanding was this part?", "very low", "very high"],
+  ["temporal", "Temporal demand", "How hurried or rushed was the pace?", "very low", "very high"],
+  ["performance", "Performance", "How successful were you in taking in the information?", "perfect", "failure"],
+  ["effort", "Effort", "How hard did you have to work to reach your level of performance?", "very low", "very high"],
+  ["frustration", "Frustration", "How insecure, discouraged, irritated, stressed or annoyed were you?", "very low", "very high"],
+];
 // Adaptive arm prior: "practice" = inferred from practice behaviour (default, no question used);
 // "stated" = the format the participant picked. Set with ?prior=stated. The fixed arm always uses the pick.
 
@@ -116,7 +126,9 @@ export function initStudy(api) {
       S.participant.format_preference = p.value;
       S.practice_trials = trials;
       S.practice_prior = practicePrior(trials);
-      blockIntro(0);
+      if (new URLSearchParams(location.search).has("calib"))       // pilot only: labelled load calibration
+        runCalibration(api, S.participant.number, (res) => { S.calibration = res; blockIntro(0); });
+      else blockIntro(0);
     };
   }
 
@@ -160,7 +172,7 @@ export function initStudy(api) {
         const t = api.finishArtwork();
         S.blocks[b].artworks.push({ label, first_format: d?.action ?? null, recognized_t: t.recognized_t, done_t: t.done_t,
           interaction_s: t.recognized_t != null ? +(t.done_t - t.recognized_t).toFixed(2) : null,
-          p_load_end: t.p_load_end, load_terms: t.load_terms });
+          p_load_end: t.p_load_end, load_terms: t.load_terms, load_features: t.load_features });
         if (k + 1 < PER_BLOCK) artwork(b, k + 1); else blockQuestions(b);
       };
     }, (other) => {                           // the camera found a different painting
@@ -172,16 +184,18 @@ export function initStudy(api) {
   function blockQuestions(b) {
     bar.classList.add("hidden");
     show(`<h1>About part ${b + 1}</h1>
-      <div class="q"><b>Mental demand:</b> how mentally demanding was this part?
-        <input type="range" id="tlx" min="0" max="100" step="5" value="50" /><div class="ends"><span>very low</span><output id="tlxOut">50</output><span>very high</span></div></div>
-      <div class="q"><b>Effort:</b> how much mental effort did you invest? ${scale("paas", 1, 9, "very, very low", "very, very high")}</div>
+      ${TLX.map(([k, name, q, lo, hi]) => `<div class="q"><b>${name}:</b> ${q}
+        <input type="range" id="tlx_${k}" min="0" max="100" step="5" value="50" /><div class="ends"><span>${lo}</span><output id="tlxo_${k}">–</output><span>${hi}</span></div></div>`).join("")}
+      <div class="q"><b>Mental effort:</b> how much mental effort did you invest? ${scale("paas", 1, 9, "very, very low", "very, very high")}</div>
       <p id="msg" class="msg"></p><button id="go" class="primary">Continue</button>`);
-    let moved = false;
-    $("#tlx").oninput = (e) => { moved = true; $("#tlxOut").textContent = e.target.value; };
+    const moved = new Set();
+    for (const [k] of TLX) $(`#tlx_${k}`).oninput = (e) => { moved.add(k); $(`#tlxo_${k}`).textContent = e.target.value; };
     $("#go").onclick = () => {
       const paas = val("paas");
-      if (!paas || !moved) { $("#msg").textContent = "Please move the slider and choose an effort rating."; return; }
-      Object.assign(S.blocks[b], { tlx_mental_demand: +$("#tlx").value, paas, ended_t: now() });
+      if (!paas || moved.size < TLX.length) { $("#msg").textContent = "Please set every slider and choose an effort rating."; return; }
+      const tlx = Object.fromEntries(TLX.map(([k]) => [k, +$(`#tlx_${k}`).value]));
+      const raw_tlx = +(Object.values(tlx).reduce((s, v) => s + v, 0) / TLX.length).toFixed(1);
+      Object.assign(S.blocks[b], { tlx, raw_tlx, tlx_mental_demand: tlx.mental, paas, ended_t: now() });
       const sysDone = b % 2 === 1;                      // each system's two parts run back to back
       if (sysDone) sus(b); else blockIntro(b + 1);
     };

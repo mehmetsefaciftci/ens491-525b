@@ -27,10 +27,15 @@ fieldset { border: 1px solid var(--line); border-radius: 10px; display: flex; ga
 .msg { color: var(--warn); margin: 0; min-height: 1em; }
 
 /* AR panel: sized in CSS px; the CSS3D anchor maps the artwork width to 1000 px. */
-.panel { width: 640px; padding: 28px 30px; border-radius: 22px; background: var(--card);
+.panel { --fs: 1; width: 640px; padding: 28px 30px; border-radius: 22px; background: var(--card);
   border: 2px solid var(--line); font-size: 30px; line-height: 1.35; }
 .panel h2 { margin: 6px 0 10px; font-size: 38px; color: var(--accent); }
-.panel p { margin: 0 0 18px; min-height: 3.5em; }
+.panel p { margin: 0 0 18px; min-height: 3.5em; font-size: calc(1em * var(--fs)); }
+.panel .ptools { display: flex; gap: 10px; flex-wrap: wrap; margin: 4px 0 6px; }
+.panel .ptools button { font-size: 20px; min-height: 48px; }
+.panel.pinned .ptools button { font-size: 13px; min-height: 36px; }
+.panel.audio:not(.captions) p { display: none; }   /* audio without redundant on-screen text */
+.panel .listening { color: var(--muted); font-style: italic; }
 .pmeta { display: flex; justify-content: space-between; color: var(--muted); font-size: 22px; }
 .pctrl, .pfmt { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .panel button { font-size: 24px; min-height: 56px; }

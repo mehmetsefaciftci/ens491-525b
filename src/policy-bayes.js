@@ -236,6 +236,8 @@ export class BayesSession {
     else if (name === "request_more") s.a_d += C.W_EXPLICIT;
     else if (name === "dwell_long") s.a_d += C.W_DWELL;
     else if (name === "left_early") s.b_d += C.W_DWELL;
+    else if (name === "like") s.a_d += C.W_IMPLICIT;                         // explicit interest in this painting
+    else if (name === "transcript_on" && cur.endsWith("audio")) s.b_a += C.W_DWELL;   // reads along: leans to text
     else if (name.startsWith("override:")) {
       const nw = name.split(":")[1];
       if (cur.endsWith("audio") && nw.endsWith("text")) s.b_a += C.W_EXPLICIT;

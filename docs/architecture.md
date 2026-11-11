@@ -8,6 +8,7 @@ Context-aware multimodal content selection for cultural-heritage AR · team 525B
  ┌──────────────────────────── 3  Interaction (browser) ─────────────────────────────┐
  │ app.js        camera tracking (MindAR), AR panel (CSS3D), content player (text/TTS),│
  │               manual controls, decision HUD, session log export                     │
+ │ calibration-ui.js  pilot: 0-back / 2-back reading calibration (?calib=1)             │
  │ study-ui.js   consent → profile → practice choice → 4 blocks → TLX/Paas → SUS →     │
  │               recall → results file                                                 │
  └───────────────▲───────────────────────────────▲─────────────────────────────────────┘
@@ -18,6 +19,8 @@ Context-aware multimodal content selection for cultural-heritage AR · team 525B
  │ policy.js        fixed-step utility of the draft proposal (parity with Python)      │
  │ policy-fixed.js  non-adaptive comparator (participant's chosen format)              │
  │ load.js          behavioural cognitive-load estimate P(high load)                   │
+ │ fit.js           logistic fit + leave-one-subject-out evaluation of the load model  │
+ │ placement.js     panel placement optimisation (visibility, contiguity, occlusion)   │
  │ filter.js        information filtering of optional facts (prior knowledge, walking, │
  │                  noisy audio); core facts never filtered                            │
  │ study.js         counterbalancing, artwork rotation, SUS and recall scoring         │

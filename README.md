@@ -30,13 +30,14 @@ npm test                      # JS policy vs. Python (20 scenarios) + Bayesian s
 node sim/compare.mjs 2000 --md results/policy-comparison.md   # policy comparison on simulated visits
 node sim/power.mjs --md results/power-analysis.md             # power of the planned study
 node tools/analyze-study.mjs <study files or folder> --md report.md --csv long.csv
+node tools/fit-load.mjs <study files or folder>               # fit load weights, leave-one-subject-out accuracy
 python -m http.server 8525    # then open http://localhost:8525/?nocam=1 on a desktop
 ```
 
 On a phone the page must be served over **HTTPS** (camera and microphone). Any static host
 works, e.g. GitHub Pages.
 
-URL options: `?prior=stated` (study: adaptive arm uses the participant's pick instead of practice behaviour) · `?content=content/<file>.json` other content file · `?study=1` controlled-study mode (consent, blocks, questionnaires, recall, results file) · `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
+URL options: `?calib=1` (study, pilot only: 0-back/2-back load calibration) · `?prior=stated` (study: adaptive arm uses the participant's pick instead of practice behaviour) · `?content=content/<file>.json` other content file · `?study=1` controlled-study mode (consent, blocks, questionnaires, recall, results file) · `?nocam=1` desktop test without camera · `?debug=1` adds *Simulate target* ·
 `?pin=1` content panel pinned to the screen instead of next to the artwork.
 
 ## Using your own artwork
@@ -71,6 +72,9 @@ src/noise.js          microphone level meter
 src/motion.js         walking detection from the accelerometer
 src/filter.js         context-aware information filtering of optional facts
 src/load.js           behavioural cognitive-load estimate
+src/fit.js            load model fitting and leave-one-subject-out evaluation
+src/placement.js      panel placement optimisation
+src/calibration-ui.js pilot load calibration screens
 src/policy-fixed.js   non-adaptive comparator for the study
 src/study.js          counterbalancing, SUS and recall scoring
 src/study-ui.js       study mode screens

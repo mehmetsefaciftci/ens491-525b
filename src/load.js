@@ -46,6 +46,13 @@ export class LoadEstimator {
   }
   hesitation(seconds) { if (seconds > this.cfg.HESITATE_S) { this.e.hesitate += 1; this.trace.push({ kind: "hesitate", s: +seconds.toFixed(1) }); } }
 
+  // Raw evidence (unweighted), in the order of FEATURES in fit.js; used to fit the weights.
+  features() {
+    const e = this.e, x = this.ctx;
+    return { pace: +e.pace.toFixed(3), replay: +e.replay.toFixed(3), stepdown: +e.stepdown.toFixed(3), hesitate: +e.hesitate.toFixed(3),
+      walking: +x.pMoving.toFixed(3), noise_audio: x.audio ? +x.pNoisy.toFixed(3) : 0 };
+  }
+
   terms() {
     const c = this.cfg, e = this.e, x = this.ctx;
     return { prior: c.B0, pace: c.W_PACE * e.pace, replay: c.W_REPLAY * e.replay, stepdown: c.W_STEPDOWN * e.stepdown,
