@@ -49,6 +49,10 @@ node tools/dev-server.mjs 8526
 Content lives in `content/artworks.json`: core segments (shown in every format) and optional
 detail segments (detailed formats only). The current text is a **draft and must be verified**.
 
+Current target: Osman Hamdi Bey, *The Tortoise Trainer* (1906), public domain, image from
+Wikimedia Commons ("Osman Hamdi Bey - The Tortoise Trainer - Google Art Project.jpg"),
+resized to 900 px wide.
+
 ## Files
 
 ```

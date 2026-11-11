@@ -14,11 +14,14 @@ export class NoiseMeter {
   }
 
   async start() {
+    // iOS Safari only lets an AudioContext run if it is created/resumed inside the tap handler,
+    // i.e. before the first await below.
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const resumed = this.ctx.resume();
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
     });
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (this.ctx.state === "suspended") await this.ctx.resume();
+    await resumed;
     const src = this.ctx.createMediaStreamSource(stream);
     this.analyser = this.ctx.createAnalyser();
     this.analyser.fftSize = 2048;
